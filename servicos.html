@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Serviços — NC Gestão Veicular</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <header class="header">
+    <nav class="nav">
+      <a href="index.html" class="logo-area">
+        <div class="logo-placeholder">NC Gestão Veicular</div>
+      </a>
+      <ul class="nav-links">
+        <li><a href="index.html">Início</a></li>
+        <li><a href="servicos.html">Serviços</a></li>
+        <li><a href="cadastro.html">Cadastro</a></li>
+        <li><a href="area-cliente.html">Área do Cliente</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main class="main servicos-page">
+    <section class="servicos-intro">
+      <h1>Serviços prestados</h1>
+      <p>Emissão de documentos e pagamentos veiculares com agilidade e segurança.</p>
+    </section>
+
+    <!-- ========== CRLV-E até 15 min ========== -->
+    <section class="servico-section crlv-section" id="crlv-imediato">
+      <h2>Emissão de CRLV-E</h2>
+      <p class="subtitle">Certificado de Registro e Licenciamento de Veículo (versão eletrônica)</p>
+      <p class="estados-disponiveis">Estados disponíveis — até 15 minutos para a emissão</p>
+      <div class="estados-simbolos" data-estados="AC,AP,BA,GO,MA,MG,PR,PI,RR,SP,SE,TO"></div>
+      <div class="estados-lista" id="lista-crlv-imediato"></div>
+      <div id="aviso-15min" class="aviso-15min">
+        <strong>Emissão solicitada</strong>
+        Até 15 minutos a emissão estará disponível na plataforma. Você pode acompanhar na <a href="area-cliente.html">Área do Cliente</a>.
+      </div>
+    </section>
+
+    <!-- ========== CRLV-E Agendado ========== -->
+    <section class="servico-section crlv-section" id="crlv-agendado">
+      <h2>Emissão CRLV-E Agendado</h2>
+      <p class="subtitle">Após preencher o buscador, será exibida a mensagem com o tempo de entrega do documento.</p>
+      <p class="estados-disponiveis">Selecione o estado para ver o valor e solicitar</p>
+      <div class="estados-simbolos" data-estados="RJ,AL,AM,CE,DF,ES,MT,PB,PE,RN,RS,RO,SC"></div>
+
+      <div class="box-observacao">
+        <strong>⚠️ Atenção:</strong>
+        <p>Verificar no Detran se o licenciamento está em dia antes de solicitar a emissão.</p>
+      </div>
+
+      <div class="buscador-card">
+        <h3>Dados para solicitar o CRLV-E</h3>
+        <form id="form-crlv-agendado" class="buscador-form">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="placa-crlv-ag">Placa do veículo</label>
+              <input type="text" id="placa-crlv-ag" placeholder="ABC1D23" maxlength="7">
+            </div>
+            <div class="form-group">
+              <label for="estado-crlv-ag">Estado</label>
+              <select id="estado-crlv-ag">
+                <option value="">Selecione o estado</option>
+                <option value="RJ" data-valor="29.90" data-via="1">1ª via CRLV-E RJ — R$ 29,90</option>
+                <option value="RJ" data-valor="129.90" data-via="2">2ª via (reemissão) CRLV-E RJ — R$ 129,90</option>
+                <option value="AL" data-valor="34.90">CRLV-E Alagoas — R$ 34,90</option>
+                <option value="AM" data-valor="79.90">CRLV-E Amazonas — R$ 79,90</option>
+                <option value="CE" data-valor="69.90">CRLV-E Ceará — R$ 69,90</option>
+                <option value="DF" data-valor="69.90">CRLV-E Distrito Federal — R$ 69,90</option>
+                <option value="ES" data-valor="29.90">CRLV-E Espírito Santo — R$ 29,90</option>
+                <option value="MT" data-valor="34.90">CRLV-E Mato Grosso — R$ 34,90</option>
+                <option value="PB" data-valor="59.90">CRLV-E Paraíba — R$ 59,90</option>
+                <option value="PE" data-valor="209.90">CRLV-E Pernambuco — R$ 209,90</option>
+                <option value="RN" data-valor="69.90">CRLV-E Rio Grande do Norte — R$ 69,90</option>
+                <option value="RS" data-valor="149.90">CRLV-E Rio Grande do Sul — R$ 149,90</option>
+                <option value="RO" data-valor="39.90">CRLV-E Rondônia — R$ 39,90</option>
+                <option value="SC" data-valor="79.90">CRLV-E Santa Catarina — R$ 79,90</option>
+              </select>
+            </div>
+          </div>
+          <div id="msg-entrega-agendado" class="aviso-entrega" style="display: none;"></div>
+          <div class="form-actions">
+            <a id="link-whatsapp-crlv-ag" href="#" target="_blank" rel="noopener" class="btn btn-primary btn-whatsapp" style="display: none;">Solicitar CRLV-E via WhatsApp</a>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <!-- ========== ATPV-E ========== -->
+    <section class="servico-section atpv-section" id="atpv">
+      <h2>Emissão de ATPV-E</h2>
+      <p class="subtitle">Autorização para Transferência de Propriedade de Veículo (eletrônica)</p>
+      <p class="estados-disponiveis">Estados disponíveis — emissão em até 2 horas</p>
+      <div class="estados-simbolos" data-estados="ES,MG,BA,SC,AL,RJ,RS,PR,CE"></div>
+      <div class="estados-lista" id="lista-atpv"></div>
+      <p class="obs-demais">Demais estados: consultar valores e tempo de emissão.</p>
+      <div class="buscador-card">
+        <p class="instrucao">Selecione o estado desejado e clique em Emitir para ser direcionado ao WhatsApp.</p>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Estado e valor</label>
+            <select id="estado-atpv">
+              <option value="">Selecione o estado</option>
+              <option value="ES" data-valor="100">ATPV-E Espírito Santo — R$ 100,00</option>
+              <option value="MG" data-valor="100">ATPV-E Minas Gerais — R$ 100,00</option>
+              <option value="BA" data-valor="110">ATPV-E Bahia — R$ 110,00</option>
+              <option value="SC" data-valor="130">ATPV-E Santa Catarina — R$ 130,00</option>
+              <option value="AL" data-valor="150">ATPV-E Alagoas — R$ 150,00</option>
+              <option value="RJ" data-valor="130">ATPV-E Rio de Janeiro — R$ 130,00</option>
+              <option value="RS" data-valor="150">ATPV-E Rio Grande do Sul — R$ 150,00</option>
+              <option value="PR" data-valor="130">ATPV-E Paraná — R$ 130,00</option>
+              <option value="CE" data-valor="200">ATPV-E Ceará — R$ 200,00</option>
+            </select>
+          </div>
+          <div class="form-group form-group-btn">
+            <label>&nbsp;</label>
+            <a id="link-whatsapp-atpv" href="#" target="_blank" rel="noopener" class="btn btn-primary btn-whatsapp" style="display: none;">Emitir ATPV-E (WhatsApp)</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== Painel de débitos ========== -->
+    <section class="servico-section" id="painel-debitos">
+      <h2>Painel de débitos</h2>
+      <div class="card">
+        <h3>Consulta de débitos — R$ 10,90</h3>
+        <p>Informe a placa e o estado para consultar a quantidade de débitos do veículo.</p>
+        <form id="form-consulta-debitos" class="buscador-form">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="placa-debitos">Placa do veículo</label>
+              <input type="text" id="placa-debitos" placeholder="ABC1D23" maxlength="7">
+            </div>
+            <div class="form-group">
+              <label for="estado-debitos">Estado</label>
+              <select id="estado-debitos">
+                <option value="">Selecione</option>
+                <option value="AC">AC</option><option value="AL">AL</option><option value="AP">AP</option><option value="AM">AM</option>
+                <option value="BA">BA</option><option value="CE">CE</option><option value="DF">DF</option><option value="ES">ES</option>
+                <option value="GO">GO</option><option value="MA">MA</option><option value="MG">MG</option><option value="MS">MS</option>
+                <option value="MT">MT</option><option value="PA">PA</option><option value="PB">PB</option><option value="PE">PE</option>
+                <option value="PI">PI</option><option value="PR">PR</option><option value="RJ">RJ</option><option value="RN">RN</option>
+                <option value="RO">RO</option><option value="RR">RR</option><option value="RS">RS</option><option value="SC">SC</option>
+                <option value="SE">SE</option><option value="SP">SP</option><option value="TO">TO</option>
+              </select>
+            </div>
+          </div>
+          <button type="submit" class="btn btn-primary">Consultar débitos (R$ 10,90)</button>
+        </form>
+      </div>
+      <div class="card">
+        <h3>Parcelamento de débitos consultados — R$ 39,90</h3>
+        <p>Com os débitos consultados, efetive o pagamento na <a href="area-cliente.html">área de pagamentos</a> da plataforma. Após o pagamento, a confirmação será enviada via WhatsApp.</p>
+      </div>
+    </section>
+
+    <!-- ========== Multas, IPVA, Licenciamento ========== -->
+    <section class="servico-section" id="multas-ipva-lic">
+      <h2>Emissão de Multas, IPVA e Licenciamento</h2>
+      <div class="quadro-aviso valores-emissao">
+        <strong>Valores das emissões:</strong>
+        <ul>
+          <li>Multas — R$ 6,90 cada boleto</li>
+          <li>IPVA — R$ 8,90 cada boleto</li>
+          <li>Licenciamento — R$ 8,90 cada boleto</li>
+        </ul>
+      </div>
+      <div class="buscador-card">
+        <form id="form-multas-ipva" class="buscador-form">
+          <div class="form-group">
+            <label for="tipo-emissao">O que deseja emitir?</label>
+            <select id="tipo-emissao">
+              <option value="">Selecione</option>
+              <option value="multa">Multa</option>
+              <option value="ipva">IPVA</option>
+              <option value="licenciamento">Licenciamento</option>
+              <option value="debitos">Selecionar débitos</option>
+            </select>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="placa-multas">Placa do veículo</label>
+              <input type="text" id="placa-multas" placeholder="ABC1D23" maxlength="7">
+            </div>
+            <div class="form-group">
+              <label for="estado-multas">Estado</label>
+              <select id="estado-multas">
+                <option value="">Selecione</option>
+                <option value="AC">AC</option><option value="AL">AL</option><option value="AP">AP</option><option value="AM">AM</option>
+                <option value="BA">BA</option><option value="CE">CE</option><option value="DF">DF</option><option value="ES">ES</option>
+                <option value="GO">GO</option><option value="MA">MA</option><option value="MG">MG</option><option value="MS">MS</option>
+                <option value="MT">MT</option><option value="PA">PA</option><option value="PB">PB</option><option value="PE">PE</option>
+                <option value="PI">PI</option><option value="PR">PR</option><option value="RJ">RJ</option><option value="RN">RN</option>
+                <option value="RO">RO</option><option value="RR">RR</option><option value="RS">RS</option><option value="SC">SC</option>
+                <option value="SE">SE</option><option value="SP">SP</option><option value="TO">TO</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-actions">
+            <a id="link-whatsapp-debitos" href="#" target="_blank" rel="noopener" class="btn btn-primary btn-whatsapp" style="display: none;">Enviar para WhatsApp</a>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <!-- ========== Consulta Fipe ========== -->
+    <section class="servico-section" id="consulta-fipe">
+      <h2>Consulta Fipe</h2>
+      <p class="preco-destaque">Placa — R$ 0,00</p>
+      <div class="buscador-card">
+        <p>Informe a placa do veículo para realizar a consulta.</p>
+        <form id="form-fipe" class="buscador-form">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="placa-fipe">Placa do veículo</label>
+              <input type="text" id="placa-fipe" placeholder="ABC1D23" maxlength="7">
+            </div>
+            <div class="form-group form-group-btn">
+              <label>&nbsp;</label>
+              <button type="submit" class="btn btn-primary">Solicitar consulta</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <!-- ========== Consulta base estadual ========== -->
+    <section class="servico-section" id="consulta-base">
+      <h2>Consulta base estadual</h2>
+      <p class="preco-destaque">Placa — R$ 5,00</p>
+      <div class="box-observacao">
+        <strong>O que será retornado nesta consulta:</strong> Placa, Renavam, chassi e características do veículo.
+      </div>
+      <div class="buscador-card">
+        <form id="form-base-estadual" class="buscador-form">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="placa-base">Placa do veículo</label>
+              <input type="text" id="placa-base" placeholder="ABC1D23" maxlength="7">
+            </div>
+            <div class="form-group">
+              <label for="estado-base">Estado</label>
+              <select id="estado-base">
+                <option value="">Selecione</option>
+                <option value="AC">AC</option><option value="AL">AL</option><option value="AP">AP</option><option value="AM">AM</option>
+                <option value="BA">BA</option><option value="CE">CE</option><option value="DF">DF</option><option value="ES">ES</option>
+                <option value="GO">GO</option><option value="MA">MA</option><option value="MG">MG</option><option value="MS">MS</option>
+                <option value="MT">MT</option><option value="PA">PA</option><option value="PB">PB</option><option value="PE">PE</option>
+                <option value="PI">PI</option><option value="PR">PR</option><option value="RJ">RJ</option><option value="RN">RN</option>
+                <option value="RO">RO</option><option value="RR">RR</option><option value="RS">RS</option><option value="SC">SC</option>
+                <option value="SE">SE</option><option value="SP">SP</option><option value="TO">TO</option>
+              </select>
+            </div>
+          </div>
+          <button type="submit" class="btn btn-primary">Solicitar consulta (R$ 5,00)</button>
+        </form>
+      </div>
+    </section>
+
+    <!-- ========== Serviços Despachante ========== -->
+    <section class="servico-section" id="despachante">
+      <h2>Serviços Despachante</h2>
+      <ul class="lista-servicos-despachante">
+        <li>Transferência veicular — Vários estados</li>
+        <li>2ª Via Recibo — Vários estados</li>
+        <li>Baixa comunicado de venda — Vários estados</li>
+        <li>Outros serviços</li>
+      </ul>
+      <div class="box-observacao">
+        <strong>Observação:</strong> Serviço feito em parceria com Despachantes credenciados em todo o Brasil.
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <p>© NC Gestão Veicular — Documentos e pagamentos veiculares</p>
+  </footer>
+  <script src="app.js"></script>
+  <script src="servicos.js"></script>
+</body>
+</html>

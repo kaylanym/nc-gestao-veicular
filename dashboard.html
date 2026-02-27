@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Painel — NC Gestão Veicular</title>
+  <link rel="stylesheet" href="dashboard.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body class="dash-body">
+
+  <!-- ══ SIDEBAR ══ -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sb-logo">
+      <div class="sb-logo-icon">
+        <span class="sb-logo-monogram">NC</span>
+      </div>
+      <div class="sb-logo-text">
+        NC Gestão Veicular<span>Painel do Cliente</span>
+      </div>
+    </div>
+
+    <nav class="sb-nav">
+      <a class="sb-link active" data-section="novo-pedido">
+        <svg class="sb-ico" viewBox="0 0 20 20" fill="currentColor"><path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h3a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h3a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"/></svg>
+        Minha Conta
+      </a>
+      <a class="sb-link" data-section="historico">
+        <svg class="sb-ico" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"/></svg>
+        Histórico de Pedidos
+      </a>
+
+      <div class="sb-divider">Pedidos</div>
+
+      <a class="sb-link" data-section="pedidos">
+        <svg class="sb-ico" viewBox="0 0 20 20" fill="currentColor"><path d="M9 2a2 2 0 00-2 2v8a2 2 0 002 2h6a2 2 0 002-2V6.414A2 2 0 0016.414 5L14 2.586A2 2 0 0012.586 2H9z"/><path d="M3 8a2 2 0 012-2v10h8a2 2 0 01-2 2H5a2 2 0 01-2-2V8z"/></svg>
+        Pedidos
+      </a>
+
+      <div class="sb-divider">Financeiro</div>
+
+      <a class="sb-link" data-section="faturas">
+        <svg class="sb-ico" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M4 4a2 2 0 00-2 2v4a2 2 0 002 2V6h10a2 2 0 00-2-2H4zm2 6a2 2 0 012-2h8a2 2 0 012 2v4a2 2 0 01-2 2H8a2 2 0 01-2-2v-4zm6 4a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"/></svg>
+        Faturas
+      </a>
+      <a class="sb-link" data-section="tabela-valores">
+        <svg class="sb-ico" viewBox="0 0 20 20" fill="currentColor"><path d="M8.433 7.418c.155-.103.346-.196.567-.267v1.698a2.305 2.305 0 01-.567-.267C8.07 8.34 8 8.114 8 8c0-.114.07-.34.433-.582zM11 12.849v-1.698c.22.071.412.164.567.267.364.243.433.468.433.582 0 .114-.07.34-.433.582a2.305 2.305 0 01-.567.267z"/><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-13a1 1 0 10-2 0v.092a4.535 4.535 0 00-1.676.662C6.602 6.234 6 7.009 6 8c0 .99.602 1.765 1.324 2.246.48.32 1.054.545 1.676.662v1.941c-.391-.127-.68-.317-.843-.504a1 1 0 10-1.51 1.31c.562.649 1.413 1.076 2.353 1.253V15a1 1 0 102 0v-.092a4.535 4.535 0 001.676-.662C13.398 13.766 14 12.991 14 12c0-.99-.602-1.765-1.324-2.246A4.535 4.535 0 0011 9.092V7.151c.391.127.68.317.843.504a1 1 0 101.511-1.31c-.563-.649-1.413-1.076-2.354-1.253V5z" clip-rule="evenodd"/></svg>
+        Tabela de Valores
+      </a>
+
+      <span class="sb-link sb-link--disabled">
+        <svg class="sb-ico" viewBox="0 0 20 20" fill="currentColor"><path d="M9 4.804A7.968 7.968 0 005.5 4c-1.255 0-2.443.29-3.5.804v10A7.969 7.969 0 015.5 14c1.669 0 3.218.51 4.5 1.385A7.962 7.962 0 0114.5 14c1.255 0 2.443.29 3.5.804v-10A7.968 7.968 0 0014.5 4c-1.255 0-2.443.29-3.5.804V12a1 1 0 11-2 0V4.804z"/></svg>
+        Tabela FIPE
+        <span class="sb-em-breve">Em breve</span>
+      </span>
+
+      <div class="sb-divider">Conta</div>
+
+      <a class="sb-link" data-section="perfil">
+        <svg class="sb-ico" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"/></svg>
+        Perfil
+      </a>
+      <a class="sb-link" data-section="termos">
+        <svg class="sb-ico" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 2a1 1 0 00-1 1v1a1 1 0 002 0V3a1 1 0 00-1-1zM4 4h3a3 3 0 006 0h3a2 2 0 012 2v9a2 2 0 01-2 2H4a2 2 0 01-2-2V6a2 2 0 012-2zm2.5 7a1.5 1.5 0 100-3 1.5 1.5 0 000 3zm2.45 4a2.5 2.5 0 10-4.9 0h4.9zM12 9a1 1 0 100 2h3a1 1 0 100-2h-3zm-1 4a1 1 0 011-1h2a1 1 0 110 2h-2a1 1 0 01-1-1z" clip-rule="evenodd"/></svg>
+        Termos de Uso
+      </a>
+    </nav>
+
+    <div class="sb-bottom">
+      <a href="#" onclick="logout(); return false;" class="sb-link sb-sair">
+        <svg class="sb-ico" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 3a1 1 0 00-1 1v12a1 1 0 102 0V4a1 1 0 00-1-1zm10.293 9.293a1 1 0 001.414 1.414l3-3a1 1 0 000-1.414l-3-3a1 1 0 10-1.414 1.414L14.586 9H7a1 1 0 100 2h7.586l-1.293 1.293z" clip-rule="evenodd"/></svg>
+        Sair
+      </a>
+    </div>
+  </aside>
+
+  <!-- ══ MAIN ══ -->
+  <div class="dash-main">
+
+    <!-- Header -->
+    <header class="dash-header">
+      <button class="sb-toggle" id="sb-toggle" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
+      <div class="dash-header-welcome">
+        Bem-vindo, <span id="header-nome">Cliente</span>
+      </div>
+    </header>
+
+    <!-- Content -->
+    <div class="dash-content">
+
+      <!-- Banner de pedidos recusados (exibido automaticamente pelo JS) -->
+      <div id="banner-negados" style="display:none;margin-bottom:12px;padding:14px 16px;background:#fef2f2;border:1px solid #fecaca;border-radius:10px;color:#991b1b;font-size:.85rem;line-height:1.5"></div>
+
+      <!-- Banner de avisos (pode editar o texto aqui) -->
+      <div class="dash-banner" id="dash-banner">
+        <svg viewBox="0 0 20 20" fill="currentColor" width="16"><path fill-rule="evenodd" d="M18 3a1 1 0 00-1.447-.894L8.763 6H5a3 3 0 000 6h.28l1.771 5.316A1 1 0 008 18h1a1 1 0 001-1v-4.382l6.553 3.276A1 1 0 0018 15V3z" clip-rule="evenodd"/></svg>
+        <span id="banner-texto">Plataforma NC Gestão Veicular — Emissões de documentos e pagamentos veiculares 100% online.</span>
+        <button class="banner-close" id="banner-close" aria-label="Fechar">✕</button>
+      </div>
+
+      <!-- ─── Novo Pedido / Minha Conta ─── -->
+      <section class="dash-section active" id="section-novo-pedido">
+
+        <!-- Cards de info topo -->
+        <div class="info-cards">
+          <div class="info-card">
+            <div class="info-card-label">Total de pedidos</div>
+            <div class="info-card-value" id="stat-pedidos">0</div>
+          </div>
+          <div class="info-card">
+            <div class="info-card-label">Pagamento</div>
+            <div class="info-card-value info-mp">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="12" fill="#009ee3"/><path d="M6 12.4c0-3.3 2.7-6 6-6s6 2.7 6 6" stroke="#fff" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="15" r="2" fill="#fff"/></svg>
+              Mercado Pago
+            </div>
+          </div>
+          <div class="info-card">
+            <div class="info-card-label">Suporte</div>
+            <div class="info-card-value">
+              <a class="info-wpp" id="link-suporte" href="#" target="_blank">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M20.52 3.48A11.93 11.93 0 0012 0C5.37 0 0 5.37 0 12c0 2.11.55 4.17 1.6 5.99L0 24l6.19-1.62A11.94 11.94 0 0012 24c6.63 0 12-5.37 12-12 0-3.21-1.25-6.23-3.48-8.52z" fill="#25D366"/><path d="M17.47 14.38c-.26-.13-1.55-.76-1.79-.85-.24-.09-.41-.13-.58.13-.17.26-.65.85-.8 1.02-.15.17-.3.19-.56.06-.26-.13-1.1-.4-2.09-1.28-.77-.69-1.29-1.54-1.44-1.8-.15-.26-.02-.4.11-.53.12-.12.26-.3.39-.45.13-.15.17-.26.26-.43.09-.17.04-.32-.02-.45-.06-.13-.58-1.39-.79-1.9-.21-.5-.42-.43-.58-.44-.15-.01-.32-.01-.49-.01-.17 0-.45.06-.69.32-.24.26-.9.88-.9 2.14 0 1.26.92 2.48 1.05 2.65.13.17 1.82 2.78 4.41 3.9.62.27 1.1.43 1.47.55.62.2 1.18.17 1.63.1.5-.07 1.55-.63 1.77-1.24.22-.61.22-1.13.15-1.24-.06-.11-.23-.17-.49-.3z" fill="#fff"/></svg>
+                Falar com Suporte
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Consultas disponíveis -->
+        <div class="servicos-section">
+          <div class="servicos-top">
+            <h2 class="servicos-title">Consultas Disponíveis</h2>
+            <div class="servicos-controls">
+              <div class="search-box">
+                <svg width="14" height="14" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"/></svg>
+                <input type="text" id="busca-servico" placeholder="Pesquisar...">
+              </div>
+            </div>
+          </div>
+
+          <!-- Tabs -->
+          <div class="srv-tabs">
+            <button class="srv-tab active" data-cat="todos">Todos</button>
+            <button class="srv-tab" data-cat="crlv">CRLV-E</button>
+            <button class="srv-tab" data-cat="crlv-ag">Agendados</button>
+            <button class="srv-tab" data-cat="atpv">ATPV-E</button>
+            <button class="srv-tab srv-tab--breve" data-cat="debitos" disabled title="Em breve">Débitos <span class="tab-breve-tag">Em breve</span></button>
+            <button class="srv-tab srv-tab--breve" data-cat="boletos" disabled title="Em breve">Boletos <span class="tab-breve-tag">Em breve</span></button>
+            <button class="srv-tab" data-cat="codigo-seg">Cód. Segurança</button>
+            <button class="srv-tab" data-cat="despachante">Despachante</button>
+          </div>
+
+          <!-- Lista de serviços -->
+          <div class="srv-grid" id="servicos-grid"></div>
+        </div>
+
+        <!-- ─── Formulário de pedido (passo inline) ─── -->
+        <div class="pedido-step" id="pedido-step" style="display:none">
+          <button class="pedido-step-back" id="pedido-step-back">
+            <svg width="14" height="14" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd"/></svg>
+            Voltar
+          </button>
+
+          <!-- Aviso de impedimentos -->
+          <div class="imp-card" id="imp-card">
+            <div class="imp-title">
+              <svg width="15" height="15" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>
+              Impedimentos para emissão
+            </div>
+            <ul class="imp-list" id="imp-list"></ul>
+          </div>
+
+          <!-- Formulário -->
+          <div class="pedido-form-card">
+            <div class="pedido-form-header">
+              <div class="pedido-form-icon" id="step-icon">🚗</div>
+              <div>
+                <div class="pedido-form-title" id="step-titulo"></div>
+                <div class="pedido-form-preco" id="step-preco"></div>
+              </div>
+            </div>
+
+            <div class="pedido-form-fields" id="step-fields"></div>
+
+            <div class="step-form-erro" id="step-form-erro"></div>
+
+            <div class="pedido-form-footer">
+              <button class="pedido-btn-back2" id="pedido-btn-back2">
+                <svg width="13" height="13" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd"/></svg>
+                Voltar
+              </button>
+              <button class="pedido-btn-solicitar" id="pedido-btn-solicitar">
+                <span id="step-btn-label">Solicitar</span>
+                <svg width="14" height="14" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- ─── Histórico ─── -->
+      <section class="dash-section" id="section-historico">
+        <div class="sec-header"><h2>Histórico de Pedidos</h2><p>Todos os seus pedidos e consultas realizados.</p></div>
+        <div id="historico-lista"></div>
+      </section>
+
+      <!-- ─── Pedidos (unificado) ─── -->
+      <section class="dash-section" id="section-pedidos">
+        <div class="servicos-section">
+          <div class="servicos-top">
+            <h2 class="servicos-title">Pedidos</h2>
+          </div>
+
+          <!-- Abas de categoria -->
+          <div class="srv-tabs" id="ped-tabs">
+            <button class="srv-tab active" data-pedcat="todos">Todos</button>
+            <button class="srv-tab" data-pedcat="crlv">CRLV-E</button>
+            <button class="srv-tab" data-pedcat="crlv-ag">Agendados</button>
+            <button class="srv-tab" data-pedcat="atpv">ATPV-E</button>
+            <button class="srv-tab" data-pedcat="codigo-seg">Cód. Segurança</button>
+            <button class="srv-tab" data-pedcat="despachante">Despachante</button>
+          </div>
+
+          <!-- Filtro de status -->
+          <div class="ped-status-filtro" id="ped-status-filtro">
+            <button class="ped-status-btn active" data-pedstatus="todos">Todos</button>
+            <button class="ped-status-btn" data-pedstatus="aguardando">⏳ Aguardando</button>
+            <button class="ped-status-btn" data-pedstatus="aceito">✔ Aceito</button>
+            <button class="ped-status-btn" data-pedstatus="concluido">✅ Concluído</button>
+            <button class="ped-status-btn" data-pedstatus="negado">❌ Recusado</button>
+          </div>
+
+          <div id="pedidos-unificados-lista"></div>
+        </div>
+      </section>
+
+      <!-- ─── Faturas ─── -->
+      <section class="dash-section" id="section-faturas">
+        <div class="sec-header"><h2>Faturas</h2><p>Histórico de pagamentos realizados na plataforma.</p></div>
+        <div class="empty-state">
+          <div class="es-icon">🧾</div>
+          <div class="es-title">Nenhuma fatura ainda</div>
+          <div class="es-text">Suas faturas aparecerão aqui após a conclusão de um pedido.</div>
+        </div>
+      </section>
+
+      <!-- ─── Tabela de Valores ─── -->
+      <section class="dash-section" id="section-tabela-valores">
+        <div class="sec-header"><h2>Tabela de Valores</h2><p>Preços de todos os serviços disponíveis na plataforma.</p></div>
+        <div class="tabela-wrap" id="tabela-valores-content"></div>
+      </section>
+
+      <!-- ─── Tabela FIPE ─── -->
+      <section class="dash-section" id="section-fipe">
+        <div class="sec-header">
+          <h2>Tabela FIPE</h2>
+          <p>Consulte o valor de mercado do seu veículo diretamente pelo portal oficial.</p>
+        </div>
+        <div class="fipe-wrap">
+          <div class="fipe-toolbar">
+            <div class="fipe-info">
+              <svg width="15" height="15" viewBox="0 0 20 20" fill="currentColor" style="color:#1a7fe8;flex-shrink:0"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/></svg>
+              <span>Consulta da Tabela FIPE — placafipe.com.br</span>
+            </div>
+            <a class="fipe-open-btn" href="https://placafipe.com.br/" target="_blank" rel="noopener">
+              <svg width="13" height="13" viewBox="0 0 20 20" fill="currentColor"><path d="M11 3a1 1 0 100 2h2.586l-6.293 6.293a1 1 0 101.414 1.414L15 6.414V9a1 1 0 102 0V4a1 1 0 00-1-1h-5z"/><path d="M5 5a2 2 0 00-2 2v8a2 2 0 002 2h8a2 2 0 002-2v-3a1 1 0 10-2 0v3H5V7h3a1 1 0 000-2H5z"/></svg>
+              Abrir no site
+            </a>
+          </div>
+          <div class="fipe-frame-wrap">
+            <iframe
+              src="https://placafipe.com.br/"
+              class="fipe-iframe"
+              id="fipe-iframe"
+              title="Tabela FIPE"
+              loading="lazy"
+              sandbox="allow-scripts allow-same-origin allow-forms allow-popups">
+            </iframe>
+            <div class="fipe-blocked" id="fipe-blocked">
+              <div class="fipe-blocked-icon">🚗</div>
+              <div class="fipe-blocked-title">O site bloqueou a incorporação</div>
+              <p>Clique no botão abaixo para acessar diretamente.</p>
+              <a href="https://placafipe.com.br/" target="_blank" rel="noopener" class="fipe-btn-site">
+                Acessar Placa FIPE
+                <svg width="13" height="13" viewBox="0 0 20 20" fill="currentColor"><path d="M11 3a1 1 0 100 2h2.586l-6.293 6.293a1 1 0 101.414 1.414L15 6.414V9a1 1 0 102 0V4a1 1 0 00-1-1h-5z"/><path d="M5 5a2 2 0 00-2 2v8a2 2 0 002 2h8a2 2 0 002-2v-3a1 1 0 10-2 0v3H5V7h3a1 1 0 000-2H5z"/></svg>
+              </a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ─── Perfil ─── -->
+      <section class="dash-section" id="section-perfil">
+        <div class="sec-header"><h2>Meu Perfil</h2><p>Suas informações cadastradas na plataforma.</p></div>
+
+        <!-- Dados cadastrais -->
+        <div class="perfil-card">
+          <div class="perfil-row"><span class="perfil-lbl">Nome</span><span class="perfil-val" id="perfil-nome">—</span></div>
+          <div class="perfil-row"><span class="perfil-lbl">E-mail</span><span class="perfil-val" id="perfil-email">—</span></div>
+          <div class="perfil-row"><span class="perfil-lbl">Telefone</span><span class="perfil-val" id="perfil-tel">—</span></div>
+          <div class="perfil-row"><span class="perfil-lbl">Endereço</span><span class="perfil-val" id="perfil-end">—</span></div>
+          <div class="perfil-row perfil-row--senha">
+            <span class="perfil-lbl">Senha</span>
+            <span class="perfil-val" style="flex:1">
+              <div style="position:relative;display:inline-flex;align-items:center;max-width:200px;width:100%">
+                <input type="password" id="perfil-senha-atual" class="perfil-senha-input" value="" readonly tabindex="-1" style="width:100%;padding-right:32px">
+                <button type="button" class="perfil-olho" id="perfil-olho-atual" aria-label="Mostrar senha" style="position:absolute;right:6px;top:50%;transform:translateY(-50%)">
+                  <svg class="olho-off" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                  <svg class="olho-on" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+                </button>
+              </div>
+            </span>
+          </div>
+        </div>
+
+        <!-- Alterar senha -->
+        <div class="perfil-card perfil-card--senha" style="margin-top:16px">
+          <div class="perfil-senha-header">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            Alterar Senha
+          </div>
+
+          <div class="perfil-senha-form">
+            <div class="perfil-campo">
+              <label for="perfil-nova-senha">Nova senha</label>
+              <div style="position:relative">
+                <input type="password" id="perfil-nova-senha" class="perfil-senha-input--edit" placeholder="Digite a nova senha" style="padding-right:40px">
+                <button type="button" class="perfil-olho" data-target="perfil-nova-senha" aria-label="Mostrar" style="position:absolute;right:10px;top:50%;transform:translateY(-50%)">
+                  <svg class="olho-off" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                  <svg class="olho-on" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+                </button>
+              </div>
+            </div>
+
+            <div class="perfil-campo">
+              <label for="perfil-confirmar-senha">Confirmar nova senha</label>
+              <div style="position:relative">
+                <input type="password" id="perfil-confirmar-senha" class="perfil-senha-input--edit" placeholder="Confirme a nova senha" style="padding-right:40px">
+                <button type="button" class="perfil-olho" data-target="perfil-confirmar-senha" aria-label="Mostrar" style="position:absolute;right:10px;top:50%;transform:translateY(-50%)">
+                  <svg class="olho-off" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                  <svg class="olho-on" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+                </button>
+              </div>
+            </div>
+
+            <div id="perfil-senha-msg" class="perfil-senha-msg" style="display:none"></div>
+
+            <button class="perfil-btn-salvar" id="perfil-btn-salvar-senha">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              Salvar nova senha
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ─── Termos ─── -->
+      <section class="dash-section" id="section-termos">
+        <div class="sec-header"><h2>Termos de Uso</h2><p>Leia com atenção os termos da plataforma.</p></div>
+        <div class="termos-box">
+          <p>Ao utilizar a plataforma NC Gestão Veicular, o usuário declara ter lido e concordado com os termos e condições de uso. Os serviços de emissão de documentos e consultas veiculares são prestados mediante pagamento prévio via Mercado Pago. A NC Gestão Veicular não se responsabiliza por informações incorretas fornecidas pelo usuário.</p>
+          <p>Os prazos de entrega são estimados e podem variar conforme disponibilidade dos órgãos emissores. Serviços de despachante são realizados em parceria com profissionais credenciados em todo o Brasil.</p>
+          <p>Dúvidas: entre em contato via WhatsApp com nossa equipe de suporte.</p>
+        </div>
+      </section>
+
+    </div><!-- /dash-content -->
+  </div><!-- /dash-main -->
+
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script src="supabase-config.js"></script>
+  <script src="app.js"></script>
+  <script>if (_supabase) protegerPagina();</script>
+  <script src="dashboard.js"></script>
+</body>
+</html>

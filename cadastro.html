@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cadastro — NC Gestão Veicular</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <header class="header">
+    <nav class="nav">
+      <a href="index.html" class="logo-area">
+        <div class="logo-placeholder">NC Gestão Veicular</div>
+      </a>
+      <ul class="nav-links">
+        <li><a href="index.html">Início</a></li>
+        <li><a href="servicos.html">Serviços</a></li>
+        <li><a href="cadastro.html">Cadastro</a></li>
+        <li><a href="area-cliente.html">Área do Cliente</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main class="main form-page">
+    <h1>Cadastro do cliente</h1>
+    <div class="form-card">
+      <form id="form-cadastro" action="#" method="post">
+        <div class="form-group">
+          <label for="nomeCompleto">Nome completo</label>
+          <input type="text" id="nomeCompleto" name="nomeCompleto" required placeholder="Digite seu nome completo">
+        </div>
+        <div class="form-group">
+          <label for="endereco">Endereço</label>
+          <input type="text" id="endereco" name="endereco" required placeholder="Rua, número, bairro, cidade, estado, CEP">
+        </div>
+        <div class="form-group">
+          <label for="telefone">Telefone (WhatsApp)</label>
+          <input type="tel" id="telefone" name="telefone" required placeholder="(00) 00000-0000">
+        </div>
+        <div class="form-group">
+          <label for="email">E-mail</label>
+          <input type="email" id="email" name="email" required placeholder="seu@email.com">
+        </div>
+        <div class="form-group">
+          <label for="senha">Senha</label>
+          <div class="input-senha-wrap" style="position:relative;width:100%;display:block">
+            <input type="password" id="senha" name="senha" required placeholder="Mínimo 6 caracteres" minlength="6" style="width:100%;box-sizing:border-box;padding-right:2.6rem">
+            <button type="button" class="btn-ver-senha" onclick="toggleSenha('senha', this)" tabindex="-1" aria-label="Ver senha" style="position:absolute;right:.75rem;top:50%;transform:translateY(-50%);background:none;border:none;outline:none;box-shadow:none;padding:0;margin:0;cursor:pointer;color:#9ca3af;display:flex;align-items:center;-webkit-appearance:none;appearance:none">
+              <svg class="olho-off" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              <svg class="olho-on" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+            </button>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="senhaConf">Confirmar senha</label>
+          <div class="input-senha-wrap" style="position:relative;width:100%;display:block">
+            <input type="password" id="senhaConf" name="senhaConf" required placeholder="Repita a senha" minlength="6" style="width:100%;box-sizing:border-box;padding-right:2.6rem">
+            <button type="button" class="btn-ver-senha" onclick="toggleSenha('senhaConf', this)" tabindex="-1" aria-label="Ver senha" style="position:absolute;right:.75rem;top:50%;transform:translateY(-50%);background:none;border:none;outline:none;box-shadow:none;padding:0;margin:0;cursor:pointer;color:#9ca3af;display:flex;align-items:center;-webkit-appearance:none;appearance:none">
+              <svg class="olho-off" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              <svg class="olho-on" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+            </button>
+          </div>
+        </div>
+        <p id="cadastro-erro" style="display:none; color:#ef4444; font-size:.875rem; margin-top:.25rem;"></p>
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary" id="cad-btn">Cadastrar</button>
+        </div>
+      </form>
+      <p id="cadastro-ok" class="aviso-15min" style="display: none; margin-top: 1rem;">
+        Cadastro realizado com sucesso. <a href="index.html">Clique aqui para entrar</a>.
+      </p>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <p>© NC Gestão Veicular — Documentos e pagamentos veiculares</p>
+  </footer>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script src="supabase-config.js"></script>
+  <script src="app.js"></script>
+  <script>
+    function toggleSenha(inputId, btn) {
+      var inp = document.getElementById(inputId);
+      var visivel = inp.type === 'text';
+      inp.type = visivel ? 'password' : 'text';
+      btn.querySelector('.olho-off').style.display = visivel ? '' : 'none';
+      btn.querySelector('.olho-on').style.display  = visivel ? 'none' : '';
+    }
+
+    document.getElementById('form-cadastro').addEventListener('submit', function (e) {
+      e.preventDefault();
+      var form  = e.target;
+      var nome  = form.nomeCompleto.value.trim();
+      var end   = form.endereco.value.trim();
+      var tel   = form.telefone.value.trim();
+      var email = form.email.value.trim();
+      var senha = form.senha.value;
+      var conf  = form.senhaConf.value;
+      var btn   = document.getElementById('cad-btn');
+      var erro  = document.getElementById('cadastro-erro');
+      erro.style.display = 'none';
+
+      if (senha !== conf) {
+        erro.textContent = 'As senhas não coincidem.';
+        erro.style.display = 'block';
+        return;
+      }
+      if (senha.length < 6) {
+        erro.textContent = 'A senha deve ter pelo menos 6 caracteres.';
+        erro.style.display = 'block';
+        return;
+      }
+
+      btn.disabled = true;
+      btn.textContent = 'Cadastrando...';
+
+      _supabase.auth.signUp({ email: email, password: senha })
+        .then(function(res) {
+          if (res.error) {
+            erro.textContent = res.error.message === 'User already registered'
+              ? 'Este e-mail já está cadastrado.'
+              : 'Erro ao criar conta. Tente novamente.';
+            erro.style.display = 'block';
+            btn.disabled = false;
+            btn.textContent = 'Cadastrar';
+            return;
+          }
+          var userId = res.data.user.id;
+          return _supabase.from('clientes').insert({
+            auth_user_id: userId,
+            nome_completo: nome,
+            email: email,
+            telefone: tel,
+            endereco: end
+          });
+        })
+        .then(function() {
+          form.reset();
+          document.getElementById('cadastro-ok').style.display = 'block';
+          btn.disabled = false;
+          btn.textContent = 'Cadastrar';
+        })
+        .catch(function() {
+          erro.textContent = 'Erro ao salvar dados. Tente novamente.';
+          erro.style.display = 'block';
+          btn.disabled = false;
+          btn.textContent = 'Cadastrar';
+        });
+    });
+  </script>
+</body>
+</html>

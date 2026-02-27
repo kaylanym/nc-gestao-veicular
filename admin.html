@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin — NC Gestão Veicular</title>
+  <link rel="stylesheet" href="admin.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body class="admin-body">
+
+  <!-- ══ SIDEBAR ══ -->
+  <aside class="adm-sidebar" id="adm-sidebar">
+    <div class="adm-logo">
+      <div class="adm-logo-icon">NC</div>
+      <div class="adm-logo-text">Admin<span>Gestão Veicular</span></div>
+    </div>
+
+    <nav class="adm-nav">
+      <a class="adm-link active" data-sec="pedidos-pendentes">
+        <svg class="adm-ico" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"/></svg>
+        Pendentes
+        <span class="adm-badge" id="badge-pendentes">0</span>
+      </a>
+      <a class="adm-link" data-sec="todos-pedidos">
+        <svg class="adm-ico" viewBox="0 0 20 20" fill="currentColor"><path d="M9 2a2 2 0 00-2 2v8a2 2 0 002 2h6a2 2 0 002-2V6.414A2 2 0 0016.414 5L14 2.586A2 2 0 0012.586 2H9z"/><path d="M3 8a2 2 0 012-2v10h8a2 2 0 01-2 2H5a2 2 0 01-2-2V8z"/></svg>
+        Todos os Pedidos
+      </a>
+      <a class="adm-link" data-sec="historico-admin">
+        <svg class="adm-ico" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"/></svg>
+        Histórico
+      </a>
+      <a class="adm-link" data-sec="clientes-admin">
+        <svg class="adm-ico" viewBox="0 0 20 20" fill="currentColor"><path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v1h8v-1zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-1a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v1h-3zM4.75 14.094A5.973 5.973 0 004 17v1H1v-1a3 3 0 013.75-2.906z"/></svg>
+        Clientes
+      </a>
+      <a class="adm-link" data-sec="kanban">
+        <svg class="adm-ico" viewBox="0 0 20 20" fill="currentColor"><path d="M2 4a1 1 0 011-1h3a1 1 0 011 1v12a1 1 0 01-1 1H3a1 1 0 01-1-1V4zm6 0a1 1 0 011-1h3a1 1 0 011 1v7a1 1 0 01-1 1H9a1 1 0 01-1-1V4zm7-1a1 1 0 00-1 1v4a1 1 0 001 1h3a1 1 0 001-1V4a1 1 0 00-1-1h-3z"/></svg>
+        Kanban
+      </a>
+      <a class="adm-link" data-sec="novo-pedido-admin">
+        <svg class="adm-ico" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd"/></svg>
+        Novo Pedido
+      </a>
+    </nav>
+
+    <div class="adm-bottom">
+      <a href="dashboard.html" class="adm-link adm-link--muted">
+        <svg class="adm-ico" viewBox="0 0 20 20" fill="currentColor"><path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h3a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h3a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"/></svg>
+        Área do Cliente
+      </a>
+      <a href="#" onclick="logout();return false;" class="adm-link adm-link--danger">
+        <svg class="adm-ico" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 3a1 1 0 00-1 1v12a1 1 0 102 0V4a1 1 0 00-1-1zm10.293 9.293a1 1 0 001.414 1.414l3-3a1 1 0 000-1.414l-3-3a1 1 0 10-1.414 1.414L14.586 9H7a1 1 0 100 2h7.586l-1.293 1.293z" clip-rule="evenodd"/></svg>
+        Sair
+      </a>
+    </div>
+  </aside>
+
+  <!-- ══ MAIN ══ -->
+  <div class="adm-main">
+    <header class="adm-header">
+      <button class="adm-toggle" id="adm-toggle" aria-label="Menu"><span></span><span></span><span></span></button>
+      <div class="adm-header-title">Painel Administrativo</div>
+      <div class="adm-header-user" id="adm-header-user">Admin</div>
+    </header>
+
+    <div class="adm-content">
+
+      <!-- ─── Pedidos Pendentes ─── -->
+      <section class="adm-section active" id="sec-pedidos-pendentes">
+        <div class="adm-sec-header">
+          <h2>Pedidos Pendentes</h2>
+          <p>Pedidos aguardando análise. Aceite ou recuse cada solicitação.</p>
+        </div>
+        <div class="adm-cat-tabs" id="tabs-pendentes">
+          <button class="adm-cat-tab active" data-cat="">Todos</button>
+          <button class="adm-cat-tab" data-cat="crlv">CRLV-E</button>
+          <button class="adm-cat-tab" data-cat="crlv-ag">CRLV-E Agendado</button>
+          <button class="adm-cat-tab" data-cat="atpv">ATPV-E</button>
+          <button class="adm-cat-tab adm-cat-tab--breve" data-cat="debitos" disabled title="Em breve">Débitos <span class="adm-tab-breve-tag">Em breve</span></button>
+          <button class="adm-cat-tab adm-cat-tab--breve" data-cat="boletos" disabled title="Em breve">Boletos <span class="adm-tab-breve-tag">Em breve</span></button>
+          <button class="adm-cat-tab" data-cat="codigo-seg">Cód. Segurança</button>
+          <button class="adm-cat-tab" data-cat="despachante">Despachante</button>
+        </div>
+        <div id="lista-pendentes"></div>
+      </section>
+
+      <!-- ─── Todos os Pedidos ─── -->
+      <section class="adm-section" id="sec-todos-pedidos">
+        <div class="adm-sec-header">
+          <div>
+            <h2>Todos os Pedidos</h2>
+            <p>Visualize e filtre todos os pedidos da plataforma.</p>
+          </div>
+          <div class="adm-filtros">
+            <button onclick="limparTodosPedidos()" style="background:none;border:1px solid #fca5a5;color:#ef4444;padding:6px 14px;border-radius:8px;font-size:.8rem;font-weight:500;cursor:pointer;white-space:nowrap">🗑 Limpar tudo (teste)</button>
+            <select id="filtro-status" class="adm-select">
+              <option value="">Todos os status</option>
+              <option value="aguardando">Aguardando</option>
+              <option value="aceito">Aceito</option>
+              <option value="negado">Negado</option>
+              <option value="concluido">Concluído</option>
+            </select>
+            <input type="text" id="filtro-busca" class="adm-input-busca" placeholder="Buscar por nome, placa...">
+          </div>
+        </div>
+        <div class="adm-cat-tabs" id="tabs-todos">
+          <button class="adm-cat-tab active" data-cat="">Todos</button>
+          <button class="adm-cat-tab" data-cat="crlv">CRLV-E</button>
+          <button class="adm-cat-tab" data-cat="crlv-ag">CRLV-E Agendado</button>
+          <button class="adm-cat-tab" data-cat="atpv">ATPV-E</button>
+          <button class="adm-cat-tab adm-cat-tab--breve" data-cat="debitos" disabled title="Em breve">Débitos <span class="adm-tab-breve-tag">Em breve</span></button>
+          <button class="adm-cat-tab adm-cat-tab--breve" data-cat="boletos" disabled title="Em breve">Boletos <span class="adm-tab-breve-tag">Em breve</span></button>
+          <button class="adm-cat-tab" data-cat="codigo-seg">Cód. Segurança</button>
+          <button class="adm-cat-tab" data-cat="despachante">Despachante</button>
+        </div>
+        <div id="lista-todos"></div>
+      </section>
+
+      <!-- ─── Histórico ─── -->
+      <section class="adm-section" id="sec-historico-admin">
+        <div class="adm-sec-header">
+          <h2>Histórico de Pedidos</h2>
+          <p>Todos os pedidos aceitos e concluídos.</p>
+        </div>
+        <div id="lista-historico-admin"></div>
+      </section>
+
+      <!-- ─── Clientes ─── -->
+      <section class="adm-section" id="sec-clientes-admin">
+        <div class="adm-sec-header">
+          <div>
+            <h2>Clientes</h2>
+            <p>Lista de todos os clientes cadastrados na plataforma.</p>
+          </div>
+          <div class="clientes-busca-wrap">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="position:absolute;left:10px;top:50%;transform:translateY(-50%);color:#94a3b8"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input type="text" id="clientes-busca" class="clientes-busca-input" placeholder="Buscar por nome ou e-mail…">
+          </div>
+        </div>
+        <div id="lista-clientes-admin"></div>
+        <div id="clientes-role-msg" style="display:none;margin-top:10px;padding:8px 14px;border-radius:8px;font-size:.82rem;font-weight:600"></div>
+      </section>
+
+      <!-- ─── Kanban ─── -->
+      <section class="adm-section" id="sec-kanban">
+        <div class="adm-sec-header">
+          <h2>Kanban de Pedidos</h2>
+          <p>Visualize todos os pedidos por etapa. Clique em "Ver" para mudar o status.</p>
+        </div>
+
+        <!-- Filtro de período -->
+        <div class="kanban-filtro-wrap">
+          <div class="kanban-filtro-rapido">
+            <button class="kanban-filtro-btn active" data-periodo="tudo">Tudo</button>
+            <button class="kanban-filtro-btn" data-periodo="hoje">Hoje</button>
+            <button class="kanban-filtro-btn" data-periodo="semana">Esta semana</button>
+            <button class="kanban-filtro-btn" data-periodo="mes">Este mês</button>
+            <button class="kanban-filtro-btn" data-periodo="3meses">Últimos 3 meses</button>
+          </div>
+          <div class="kanban-filtro-custom">
+            <span class="kanban-filtro-label">Personalizado:</span>
+            <input type="date" id="kanban-de" class="kanban-filtro-date">
+            <span class="kanban-filtro-sep">→</span>
+            <input type="date" id="kanban-ate" class="kanban-filtro-date">
+            <button class="kanban-filtro-aplicar" id="kanban-btn-filtrar">Aplicar</button>
+            <button class="kanban-filtro-limpar" id="kanban-btn-limpar" style="display:none">✕ Limpar</button>
+          </div>
+        </div>
+
+        <!-- Filtro de categoria -->
+        <div class="kanban-cat-wrap">
+          <span class="kanban-filtro-label" style="white-space:nowrap">Categoria:</span>
+          <div class="kanban-cat-btns" id="kanban-cat-btns">
+            <button class="kanban-cat-btn active" data-kancat="">Todas</button>
+            <button class="kanban-cat-btn" data-kancat="crlv">CRLV-E</button>
+            <button class="kanban-cat-btn" data-kancat="crlv-ag">CRLV-E Agendado</button>
+            <button class="kanban-cat-btn" data-kancat="atpv">ATPV-E</button>
+            <button class="kanban-cat-btn" data-kancat="codigo-seg">Cód. Segurança</button>
+            <button class="kanban-cat-btn" data-kancat="despachante">Despachante</button>
+          </div>
+        </div>
+
+        <div class="kanban-board">
+
+          <div class="kanban-col kanban-col--aguardando">
+            <div class="kanban-col-header">
+              <span class="kanban-col-dot"></span>
+              <span class="kanban-col-title">Aguardando</span>
+              <span class="kanban-col-count" id="kanban-count-aguardando">0</span>
+            </div>
+            <div class="kanban-cards" id="kanban-cards-aguardando"></div>
+          </div>
+
+          <div class="kanban-col kanban-col--aceito">
+            <div class="kanban-col-header">
+              <span class="kanban-col-dot"></span>
+              <span class="kanban-col-title">Aceito</span>
+              <span class="kanban-col-count" id="kanban-count-aceito">0</span>
+            </div>
+            <div class="kanban-cards" id="kanban-cards-aceito"></div>
+          </div>
+
+          <div class="kanban-col kanban-col--concluido">
+            <div class="kanban-col-header">
+              <span class="kanban-col-dot"></span>
+              <span class="kanban-col-title">Concluído</span>
+              <span class="kanban-col-count" id="kanban-count-concluido">0</span>
+            </div>
+            <div class="kanban-cards" id="kanban-cards-concluido"></div>
+          </div>
+
+          <div class="kanban-col kanban-col--negado">
+            <div class="kanban-col-header">
+              <span class="kanban-col-dot"></span>
+              <span class="kanban-col-title">Recusado</span>
+              <span class="kanban-col-count" id="kanban-count-negado">0</span>
+            </div>
+            <div class="kanban-cards" id="kanban-cards-negado"></div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- ─── Novo Pedido (pelo Admin) ─── -->
+      <section class="adm-section" id="sec-novo-pedido-admin">
+        <div class="adm-sec-header">
+          <h2>Adicionar Pedido para Cliente</h2>
+          <p>Crie um pedido manualmente em nome de um cliente.</p>
+        </div>
+        <div class="adm-form-card">
+          <div class="adm-form-grid">
+            <div class="adm-campo">
+              <label>Cliente</label>
+              <select id="np-cliente" class="adm-select adm-select--full"></select>
+            </div>
+            <div class="adm-campo">
+              <label>Serviço</label>
+              <select id="np-servico" class="adm-select adm-select--full">
+                <option value="">Selecione o serviço</option>
+                <option value="crlv">CRLV-E Imediato</option>
+                <option value="crlv-ag">CRLV-E Agendado</option>
+                <option value="atpv">ATPV-E</option>
+                <option value="debitos">Painel de Débitos</option>
+                <option value="boletos">Boleto</option>
+                <option value="despachante">Despachante</option>
+              </select>
+            </div>
+            <div class="adm-campo">
+              <label>Placa</label>
+              <input type="text" id="np-placa" class="adm-input" placeholder="ABC1D23" maxlength="7" style="text-transform:uppercase">
+            </div>
+            <div class="adm-campo">
+              <label>UF</label>
+              <select id="np-uf" class="adm-select adm-select--full">
+                <option value="">Selecione</option>
+                <option>AC</option><option>AL</option><option>AM</option><option>AP</option>
+                <option>BA</option><option>CE</option><option>DF</option><option>ES</option>
+                <option>GO</option><option>MA</option><option>MG</option><option>MS</option>
+                <option>MT</option><option>PA</option><option>PB</option><option>PE</option>
+                <option>PI</option><option>PR</option><option>RJ</option><option>RN</option>
+                <option>RO</option><option>RR</option><option>RS</option><option>SC</option>
+                <option>SE</option><option>SP</option><option>TO</option>
+              </select>
+            </div>
+            <div class="adm-campo">
+              <label>RENAVAM</label>
+              <input type="text" id="np-renavam" class="adm-input" placeholder="Renavam" inputmode="numeric">
+            </div>
+            <div class="adm-campo">
+              <label>CPF / CNPJ</label>
+              <input type="text" id="np-cpf" class="adm-input" placeholder="CPF ou CNPJ">
+            </div>
+            <div class="adm-campo">
+              <label>Valor (R$)</label>
+              <input type="number" id="np-preco" class="adm-input" placeholder="0.00" step="0.01" min="0">
+            </div>
+            <div class="adm-campo">
+              <label>Status inicial</label>
+              <select id="np-status" class="adm-select adm-select--full">
+                <option value="aguardando">Aguardando</option>
+                <option value="aceito">Aceito</option>
+                <option value="concluido">Concluído</option>
+              </select>
+            </div>
+          </div>
+          <div class="adm-campo" style="margin-top:4px">
+            <label>Observação (opcional)</label>
+            <textarea id="np-obs" class="adm-textarea" placeholder="Alguma nota sobre este pedido..."></textarea>
+          </div>
+          <div id="np-msg" class="adm-msg" style="display:none"></div>
+          <button class="adm-btn-primary" id="np-btn-salvar">
+            <svg width="14" height="14" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd"/></svg>
+            Adicionar Pedido
+          </button>
+        </div>
+      </section>
+
+    </div>
+  </div>
+
+  <!-- ══ MODAL — detalhe do pedido ══ -->
+  <div class="adm-overlay" id="adm-overlay" style="display:none">
+    <div class="adm-modal">
+      <div class="adm-modal-header">
+        <h3 id="modal-titulo">Detalhes do Pedido</h3>
+        <button class="adm-modal-close" id="adm-modal-close">✕</button>
+      </div>
+      <div class="adm-modal-body" id="adm-modal-body"></div>
+      <div class="adm-modal-footer">
+        <div class="adm-arquivo-wrap">
+          <label class="adm-arquivo-label">Arquivo / Link do documento</label>
+
+          <!-- Upload de arquivo -->
+          <div class="adm-upload-area" id="adm-upload-area">
+            <input type="file" id="modal-arquivo-file" accept=".pdf,.png,.jpg,.jpeg,.webp" style="display:none">
+            <div class="adm-upload-placeholder" id="adm-upload-placeholder">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="color:#94a3b8"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+              <span>Arraste um arquivo aqui ou</span>
+              <button type="button" class="adm-upload-btn" id="adm-upload-trigger">Escolher arquivo</button>
+              <span class="adm-upload-hint">PDF, PNG, JPEG, WEBP — máx. 50 MB</span>
+            </div>
+            <div class="adm-upload-preview" id="adm-upload-preview" style="display:none">
+              <span id="adm-upload-nome"></span>
+              <button type="button" class="adm-upload-remover" id="adm-upload-remover">✕</button>
+            </div>
+          </div>
+          <button class="adm-btn-upload-salvar" id="modal-btn-upload-salvar" style="display:none">
+            ⬆ Enviar arquivo
+          </button>
+
+          <!-- Separador -->
+          <div class="adm-upload-ou"><span>ou cole um link</span></div>
+
+          <!-- URL manual -->
+          <div style="display:flex;gap:8px;align-items:center">
+            <input type="text" id="modal-arquivo-url" class="adm-input" placeholder="Cole a URL do arquivo aqui" style="flex:1">
+            <button class="adm-btn-secondary" id="modal-btn-salvar-arquivo">Salvar link</button>
+          </div>
+          <div id="modal-arquivo-atual" class="adm-arquivo-atual" style="display:none"></div>
+        </div>
+        <div class="adm-campo" style="margin-top:12px">
+          <label>Observação para o cliente</label>
+          <textarea id="modal-obs" class="adm-textarea" placeholder="Adicione uma nota..."></textarea>
+        </div>
+        <div id="modal-erro" style="display:none;background:#fef2f2;border:1px solid #fecaca;color:#991b1b;padding:10px 14px;border-radius:8px;font-size:.82rem;margin-bottom:10px;line-height:1.5"></div>
+        <div class="adm-modal-acoes">
+          <button class="adm-btn-aceitar" id="modal-btn-aceitar">✓ Aceitar</button>
+          <button class="adm-btn-negar" id="modal-btn-negar">✕ Recusar</button>
+          <button class="adm-btn-concluir" id="modal-btn-concluir">⬆ Concluir</button>
+        </div>
+        <div style="margin-top:12px;padding-top:12px;border-top:1px solid #f1f5f9;text-align:right">
+          <button class="adm-btn-excluir" id="modal-btn-excluir" style="background:none;border:1px solid #fca5a5;color:#ef4444;padding:6px 14px;border-radius:8px;font-size:.8rem;font-weight:500;cursor:pointer">🗑 Excluir pedido</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script src="supabase-config.js"></script>
+  <script src="app.js"></script>
+  <script>if (_supabase) protegerAdmin();</script>
+  <script src="admin.js"></script>
+</body>
+</html>
