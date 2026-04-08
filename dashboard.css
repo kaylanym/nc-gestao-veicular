@@ -384,29 +384,32 @@ html, body {
 /* Tabs */
 .srv-tabs {
   display: flex;
-  padding: 0 20px;
-  border-bottom: 1px solid var(--border);
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 10px 20px;
   overflow-x: auto;
   scrollbar-width: none;
 }
 .srv-tabs::-webkit-scrollbar { display: none; }
 .srv-tab {
-  background: none; border: none;
-  border-bottom: 2px solid transparent;
-  padding: 10px 13px;
+  background: #f8f8f8; border: 1.5px solid #e0e0e0;
+  border-radius: 20px;
+  padding: 7px 16px;
+  margin: 8px 0;
   font-size: 12.5px;
-  font-weight: 500;
-  color: var(--text-muted);
+  font-weight: 600;
+  color: #444;
   cursor: pointer;
   white-space: nowrap;
-  transition: color .15s, border-color .15s;
+  transition: background .15s, color .15s, border-color .15s;
   font-family: inherit;
 }
-.srv-tab:hover { color: var(--accent); }
+.srv-tab:hover { border-color: var(--accent); color: var(--accent); background: #fff7ed; }
 .srv-tab.active {
-  color: var(--accent);
-  border-bottom-color: var(--accent);
-  font-weight: 600;
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+  font-weight: 700;
 }
 
 /* ── Filtro de status dos pedidos ── */
