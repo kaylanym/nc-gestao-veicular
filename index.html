@@ -7,7 +7,7 @@
   <link rel="stylesheet" href="styles.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 </head>
 <body class="landing-page">
   <div class="landing-wrap">
@@ -77,7 +77,7 @@
             </div>
             <div style="width:100%;height:1px;background:rgba(0,0,0,.1);margin:.2rem 0"></div>
             <div style="display:flex;flex-direction:column;align-items:center;gap:0">
-              <div class="stat-num" style="font-size:.95rem">até 4h</div>
+              <div class="stat-num" style="font-size:.95rem">até 2h</div>
               <div class="stat-lbl">Agendado</div>
             </div>
           </div>
@@ -135,7 +135,7 @@
               <p id="login-erro" class="mc-erro" style="display:none;"></p>
               <button type="submit" class="mc-btn-submit" id="login-btn">Entrar</button>
               <p style="text-align:center;margin-top:.75rem">
-                <a href="#" id="link-recuperar" style="font-size:.8125rem;color:#0d9488;text-decoration:none">Esqueceu a senha?</a>
+                <a href="#" id="link-recuperar" style="font-size:.8125rem;color:#f97316;text-decoration:none">Esqueceu a senha?</a>
               </p>
             </form>
 
@@ -153,7 +153,7 @@
                 <p id="rec-msg" class="mc-erro" style="display:none;"></p>
                 <button type="button" class="mc-btn-submit" id="rec-btn">Enviar link</button>
                 <p style="text-align:center;margin-top:.75rem">
-                  <a href="#" id="link-voltar-login" style="font-size:.8125rem;color:#0d9488;text-decoration:none">← Voltar ao login</a>
+                  <a href="#" id="link-voltar-login" style="font-size:.8125rem;color:#f97316;text-decoration:none">← Voltar ao login</a>
                 </p>
               </div>
             </div>
@@ -171,8 +171,12 @@
                 <input type="text" id="reg-nome" name="nomeCompleto" required placeholder="Seu nome completo">
               </div>
               <div class="mc-field">
-                <label for="reg-endereco">Endereço <span style="color:#ef4444">*</span></label>
-                <input type="text" id="reg-endereco" name="endereco" required placeholder="Rua, número, bairro, cidade, CEP">
+                <label for="reg-cpf">CPF <span style="color:#ef4444">*</span></label>
+                <input type="text" id="reg-cpf" name="cpf" required placeholder="000.000.000-00" maxlength="14" inputmode="numeric">
+              </div>
+              <div class="mc-field">
+                <label for="reg-endereco">CEP <span style="color:#ef4444">*</span></label>
+                <input type="text" id="reg-endereco" name="endereco" required placeholder="00000-000" maxlength="9" inputmode="numeric">
               </div>
               <div class="mc-field">
                 <label for="reg-telefone">Telefone (WhatsApp) <span style="color:#ef4444">*</span></label>
@@ -285,7 +289,7 @@
             msg.style.color = '#ef4444';
             msg.textContent = 'Erro: ' + res.error.message;
           } else {
-            msg.style.color = '#0d9488';
+            msg.style.color = '#f97316';
             msg.style.background = '#f0fdf4';
             msg.style.borderColor = '#bbf7d0';
             msg.textContent = 'Link enviado! Verifique sua caixa de entrada.';
@@ -350,6 +354,7 @@
         e.preventDefault();
         var form  = e.target;
         var nome  = form.nomeCompleto.value.trim();
+        var cpf   = form.cpf.value.trim();
         var end   = form.endereco.value.trim();
         var tel   = form.telefone.value.trim();
         var email = form.email.value.trim();
@@ -361,7 +366,8 @@
 
         /* Validação campo a campo com destaque visual */
         if (!nome) { marcarErroCadastro(document.getElementById('reg-nome'), erro, 'O nome completo é obrigatório.'); return; }
-        if (!end)  { marcarErroCadastro(document.getElementById('reg-endereco'), erro, 'O endereço é obrigatório.'); return; }
+        if (!cpf || cpf.replace(/\D/g,'').length !== 11) { marcarErroCadastro(document.getElementById('reg-cpf'), erro, 'CPF inválido. Digite os 11 dígitos.'); return; }
+        if (!end)  { marcarErroCadastro(document.getElementById('reg-endereco'), erro, 'O CEP é obrigatório.'); return; }
         if (!tel)  { marcarErroCadastro(document.getElementById('reg-telefone'), erro, 'O telefone é obrigatório.'); return; }
         if (!email){ marcarErroCadastro(document.getElementById('reg-email'), erro, 'O e-mail é obrigatório.'); return; }
         if (!senha){ marcarErroCadastro(document.getElementById('reg-senha'), erro, 'A senha é obrigatória.'); return; }
@@ -422,10 +428,11 @@
             var resInsert = await _supabase.from('clientes').insert({
               auth_user_id: userId,
               nome_completo: nome,
-              email: email,
-              telefone: tel,
-              endereco: end,
-              senha: senha
+              email:         email,
+              telefone:      tel,
+              endereco:      end,
+              senha:         senha,
+              cpf:           cpf,
             });
 
             if (resInsert.error) {
@@ -438,7 +445,7 @@
             form.reset();
             document.querySelector('.card-tab[data-tab="login"]').click();
             var loginErro = document.getElementById('login-erro');
-            loginErro.style.color = '#0d9488';
+            loginErro.style.color = '#f97316';
             loginErro.style.background = '#f0fdf4';
             loginErro.style.border = '1px solid #bbf7d0';
             loginErro.style.borderRadius = '8px';
@@ -467,8 +474,8 @@
         shineBeam.style.background =
           'conic-gradient(from ' + (angle - 40) + 'deg at 50% 50%,' +
           'transparent 0deg,transparent 30deg,' +
-          '#0d948822 50deg,#0d9488 70deg,#7fffd4 80deg,' +
-          '#0d9488 90deg,#0d948822 110deg,' +
+          '#f9731622 50deg,#f97316 70deg,#fdba74 80deg,' +
+          '#f97316 90deg,#f9731622 110deg,' +
           'transparent 130deg,transparent 360deg)';
       });
       shineWrap.addEventListener('mouseleave', function() {

@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Admin — NC Gestão Veicular</title>
   <link rel="stylesheet" href="admin.css">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 </head>
 <body class="admin-body">
 
@@ -75,12 +75,11 @@
         <div class="adm-cat-tabs" id="tabs-pendentes">
           <button class="adm-cat-tab active" data-cat="">Todos</button>
           <button class="adm-cat-tab" data-cat="crlv">CRLV-E</button>
-          <button class="adm-cat-tab" data-cat="crlv-ag">CRLV-E Agendado</button>
+          <button class="adm-cat-tab" data-cat="codigo-seg">Cód. Segurança</button>
           <button class="adm-cat-tab" data-cat="atpv">ATPV-E</button>
+          <button class="adm-cat-tab" data-cat="com-venda">Comunicado de Venda</button>
           <button class="adm-cat-tab adm-cat-tab--breve" data-cat="debitos" disabled title="Em breve">Débitos <span class="adm-tab-breve-tag">Em breve</span></button>
           <button class="adm-cat-tab adm-cat-tab--breve" data-cat="boletos" disabled title="Em breve">Boletos <span class="adm-tab-breve-tag">Em breve</span></button>
-          <button class="adm-cat-tab" data-cat="codigo-seg">Cód. Segurança</button>
-          <button class="adm-cat-tab" data-cat="despachante">Despachante</button>
         </div>
         <div id="lista-pendentes"></div>
       </section>
@@ -107,12 +106,11 @@
         <div class="adm-cat-tabs" id="tabs-todos">
           <button class="adm-cat-tab active" data-cat="">Todos</button>
           <button class="adm-cat-tab" data-cat="crlv">CRLV-E</button>
-          <button class="adm-cat-tab" data-cat="crlv-ag">CRLV-E Agendado</button>
+          <button class="adm-cat-tab" data-cat="codigo-seg">Cód. Segurança</button>
           <button class="adm-cat-tab" data-cat="atpv">ATPV-E</button>
+          <button class="adm-cat-tab" data-cat="com-venda">Comunicado de Venda</button>
           <button class="adm-cat-tab adm-cat-tab--breve" data-cat="debitos" disabled title="Em breve">Débitos <span class="adm-tab-breve-tag">Em breve</span></button>
           <button class="adm-cat-tab adm-cat-tab--breve" data-cat="boletos" disabled title="Em breve">Boletos <span class="adm-tab-breve-tag">Em breve</span></button>
-          <button class="adm-cat-tab" data-cat="codigo-seg">Cód. Segurança</button>
-          <button class="adm-cat-tab" data-cat="despachante">Despachante</button>
         </div>
         <div id="lista-todos"></div>
       </section>
@@ -177,7 +175,6 @@
             <button class="kanban-cat-btn" data-kancat="crlv-ag">CRLV-E Agendado</button>
             <button class="kanban-cat-btn" data-kancat="atpv">ATPV-E</button>
             <button class="kanban-cat-btn" data-kancat="codigo-seg">Cód. Segurança</button>
-            <button class="kanban-cat-btn" data-kancat="despachante">Despachante</button>
           </div>
         </div>
 
@@ -243,7 +240,6 @@
                 <option value="atpv">ATPV-E</option>
                 <option value="debitos">Painel de Débitos</option>
                 <option value="boletos">Boleto</option>
-                <option value="despachante">Despachante</option>
               </select>
             </div>
             <div class="adm-campo">

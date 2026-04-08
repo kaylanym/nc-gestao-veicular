@@ -7,6 +7,40 @@ var WPP_NUMBER = '5511999999999'; // Substitua pelo número real
 /* URL do seu backend Node.js — altere conforme o ambiente */
 var BACKEND_URL = 'https://ncgestaoveicular.app.br';
 
+/* Cache do cliente logado — preenchido em carregarUsuario() */
+var _clienteCache = null;
+
+/* Páginas atuais por seção */
+var _pagAtual = { pedidos: 1, historico: 1, faturas: 1 };
+var POR_PAGINA = 10;
+
+/* Gera HTML de paginação e retorna slice da lista */
+function aplicarPaginacao(lista, secao, renderFn) {
+  var total = lista.length;
+  var totalPags = Math.ceil(total / POR_PAGINA) || 1;
+  _pagAtual[secao] = Math.min(_pagAtual[secao] || 1, totalPags);
+  var pag = _pagAtual[secao];
+  var inicio = (pag - 1) * POR_PAGINA;
+  var slice = lista.slice(inicio, inicio + POR_PAGINA);
+
+  var btns = '';
+  btns += '<button class="pag-btn"' + (pag === 1 ? ' disabled' : '') + ' onclick="_pagAtual[\'' + secao + '\']=' + (pag - 1) + ';' + renderFn + '">‹</button>';
+  for (var i = 1; i <= totalPags; i++) {
+    if (totalPags > 7 && i > 2 && i < totalPags - 1 && Math.abs(i - pag) > 1) {
+      if (i === 3 || i === totalPags - 2) btns += '<span class="pag-info">…</span>';
+      continue;
+    }
+    btns += '<button class="pag-btn' + (i === pag ? ' ativo' : '') + '" onclick="_pagAtual[\'' + secao + '\']=' + i + ';' + renderFn + '">' + i + '</button>';
+  }
+  btns += '<button class="pag-btn"' + (pag === totalPags ? ' disabled' : '') + ' onclick="_pagAtual[\'' + secao + '\']=' + (pag + 1) + ';' + renderFn + '">›</button>';
+
+  var paginacaoHtml = total > POR_PAGINA
+    ? '<div class="paginacao">' + btns + '<span class="pag-info">Página ' + pag + ' de ' + totalPags + '</span></div>'
+    : '';
+
+  return { slice: slice, paginacaoHtml: paginacaoHtml };
+}
+
 /* ── Preços CRLV-E Imediato por estado ── */
 var CRLV_ESTADOS = [
   { uf: 'AC', nome: 'Acre',         preco: 35.90 },
@@ -89,10 +123,10 @@ var SERVICOS = [
     desc: 'Geração e validação do código de segurança para documentos ATPV-E.',
     states: 'Todo o Brasil', preco: 19.90, icon: '🔐', tipo: 'placa' },
 
-  /* Despachante */
-  { id: 'desp-transferencia', cat: 'despachante', nome: 'Transferência Veicular',
-    desc: 'Serviço completo de transferência via despachante credenciado.',
-    states: 'Todo o Brasil', preco: 0, icon: '👤', tipo: 'contato', badge: 'wpp' },
+  /* Comunicado de Venda */
+  { id: 'com-venda', cat: 'com-venda', nome: 'Comunicado de Venda',
+    desc: 'Registre a transferência de propriedade do veículo junto ao DETRAN.',
+    states: 'Todo o Brasil', preco: 80.00, icon: '📝', tipo: 'com-venda' },
 ];
 
 /* ── Tabela de valores agrupada ── */
@@ -103,7 +137,6 @@ var TABELA_GRUPOS = [
   { label: 'Débitos',          ids: ['painel-debitos-consulta','painel-debitos-pagamento'] },
   { label: 'Boletos',          ids: ['boleto-multa','boleto-ipva','boleto-licenciamento'] },
   { label: 'Código de Segurança', ids: ['codigo-seg-crlv','codigo-seg-atpv'] },
-  { label: 'Despachante',      ids: ['desp-transferencia'] },
 ];
 
 /* ── Estado atual ── */
@@ -123,6 +156,9 @@ document.addEventListener('DOMContentLoaded', function () {
   initPedidosTabs();
   renderTabelaValores();
   initModal();
+  initComunicado();
+  initSaldo();
+  initModalPagamento();
   configurarWpp();
   initPerfil();
 });
@@ -131,6 +167,7 @@ document.addEventListener('DOMContentLoaded', function () {
 async function carregarUsuario() {
   var c = await getClienteAtual();
   if (!c) { window.location.href = 'index.html'; return; }
+  _clienteCache = c;
   var nome = c.nomeCompleto || 'Cliente';
   document.getElementById('header-nome').textContent = nome;
   document.getElementById('perfil-nome').textContent = nome;
@@ -140,6 +177,50 @@ async function carregarUsuario() {
   var senhaEl = document.getElementById('perfil-senha-atual');
   if (senhaEl) senhaEl.value = c.senha || '';
   atualizarStats();
+  atualizarSaldoBadges(c.saldo || 0);
+  initCpfPerfil(c);
+  if (c.isAdmin) {
+    var linkAdmin = document.getElementById('link-painel-admin');
+    if (linkAdmin) linkAdmin.style.display = '';
+  }
+}
+
+function initCpfPerfil(cliente) {
+  var valEl  = document.getElementById('perfil-cpf-val');
+  var inp    = document.getElementById('perfil-cpf-input');
+  var btn    = document.getElementById('perfil-cpf-btn');
+  if (!valEl || !inp || !btn) return;
+
+  if (cliente.cpf) {
+    valEl.textContent = cliente.cpf;
+    btn.style.display = 'none';
+  } else {
+    valEl.textContent = '—';
+    btn.textContent = 'Adicionar CPF';
+  }
+
+  btn.addEventListener('click', async function() {
+    if (inp.style.display === 'none') {
+      inp.style.display = 'inline-block';
+      inp.focus();
+      btn.textContent = 'Salvar';
+      return;
+    }
+    var cpf = inp.value.replace(/\D/g, '');
+    if (cpf.length !== 11) {
+      mostrarToast('CPF inválido. Digite os 11 dígitos.', 'erro');
+      return;
+    }
+    var cpfFmt = cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
+    var cl = await getClienteAtual();
+    if (!cl) return;
+    var { error } = await _supabase.from('clientes').update({ cpf: cpfFmt }).eq('id', cl.id);
+    if (error) { mostrarToast('Erro ao salvar CPF.', 'erro'); return; }
+    valEl.textContent = cpfFmt;
+    inp.style.display = 'none';
+    btn.style.display = 'none';
+    mostrarToast('CPF salvo com sucesso!', 'sucesso');
+  });
 }
 
 /* ── Stats ── */
@@ -152,7 +233,7 @@ async function atualizarStats() {
 
 /* ── Alerta de pedidos recusados ── */
 function mostrarAlertaNegados(pedidos) {
-  var negados = pedidos.filter(function (p) { return p.status === 'negado'; });
+  var negados = pedidos.filter(function (p) { return p.status === 'negado' || p.status === 'pagamento_negado'; });
   var banner = document.getElementById('banner-negados');
   if (!banner) return;
   if (negados.length === 0) { banner.style.display = 'none'; return; }
@@ -188,11 +269,88 @@ function initNav() {
       if (alvo) {
         alvo.classList.add('active');
         if (sec === 'fipe') initFipe();
+        else if (sec === 'saldo') { carregarSaldo(); carregarHistoricoTransacoes(); }
+        else if (sec === 'faturas') carregarFaturas();
         else if (sec !== 'novo-pedido') renderPedidosFiltrados(sec);
       }
       if (window.innerWidth < 769) fecharSidebar();
     });
   });
+}
+
+/* ── Faturas ── */
+async function carregarFaturas() {
+  var secEl = document.getElementById('section-faturas');
+  if (!secEl) return;
+
+  var HEADER = '<div class="sec-header"><h2>Faturas</h2><p>Histórico de pagamentos realizados na plataforma.</p></div>';
+  secEl.innerHTML = HEADER + '<div style="text-align:center;padding:40px;color:#888">Carregando...</div>';
+
+  var cliente = _clienteCache || await getClienteAtual();
+  if (!cliente) {
+    secEl.innerHTML = HEADER + '<div class="card" style="text-align:center;padding:40px;color:#888">Sessão expirada. Faça login novamente.</div>';
+    return;
+  }
+
+  var res = await _supabase
+    .from('pedidos')
+    .select('*')
+    .eq('cliente_id', cliente.id)
+    .gt('preco', 0)
+    .order('criado_em', { ascending: false });
+
+  if (res.error) {
+    secEl.innerHTML = HEADER + '<div class="card" style="text-align:center;padding:40px;color:#ef4444">Erro ao carregar faturas. Tente novamente.</div>';
+    return;
+  }
+
+  var data = res.data || [];
+
+  if (data.length === 0) {
+    secEl.innerHTML = HEADER +
+      '<div style="background:#fff;border-radius:14px;box-shadow:0 1px 4px rgba(0,0,0,.08);text-align:center;padding:48px 24px">' +
+        '<div style="font-size:2.5rem;margin-bottom:12px">🧾</div>' +
+        '<div style="font-weight:600;font-size:15px;margin-bottom:6px">Nenhuma fatura ainda</div>' +
+        '<div style="color:#888;font-size:13px">Suas faturas aparecerão aqui após realizar um pedido pago.</div>' +
+      '</div>';
+    return;
+  }
+
+  var STATUS_LABEL = { aguardando: 'Aguardando', aceito: 'Em andamento', negado: 'Recusado', concluido: 'Concluído', aguardando_pagamento: 'Ag. Pagamento', pagamento_negado: 'Pag. Recusado' };
+
+  var total = data.reduce(function(s, p) { return s + parseFloat(p.preco || 0); }, 0);
+  var totalFmt = 'R$ ' + total.toFixed(2).replace('.', ',');
+
+  var cardStyle = 'background:#fff;border-radius:14px;box-shadow:0 1px 4px rgba(0,0,0,.08);';
+
+  var pagF = aplicarPaginacao(data, 'faturas', 'carregarFaturas()');
+  var itensPag = pagF.slice.map(function(p) {
+    var preco = 'R$ ' + parseFloat(p.preco).toFixed(2).replace('.', ',');
+    var dataFmt = p.criado_em ? new Date(p.criado_em).toLocaleDateString('pt-BR', { day:'2-digit', month:'2-digit', year:'numeric' }) : '—';
+    var status = STATUS_LABEL[p.status] || p.status || 'Aguardando';
+    var placaStr = p.placa ? '<span>Placa: <strong>' + p.placa + '</strong></span> &nbsp;·&nbsp; ' : '';
+    var docBtn = p.arquivo_url
+      ? '<a href="' + p.arquivo_url + '" target="_blank" style="display:inline-flex;align-items:center;gap:5px;font-size:.75rem;color:#f97316;font-weight:600;text-decoration:none;background:#fff7ed;border:1px solid #fdba74;border-radius:6px;padding:3px 10px;margin-top:6px">📄 Ver documento</a>'
+      : '';
+    return '<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:14px 0;border-bottom:1px solid #eee">' +
+      '<div style="flex:1;min-width:0">' +
+        '<div style="font-weight:600;font-size:13.5px;margin-bottom:3px">' + (p.servico || '—') + '</div>' +
+        '<div style="font-size:11.5px;color:#888">' + placaStr + dataFmt + '</div>' +
+        docBtn +
+      '</div>' +
+      '<div style="display:flex;flex-direction:column;align-items:flex-end;gap:5px;flex-shrink:0">' +
+        '<div style="font-weight:700;font-size:14px;color:#111">' + preco + '</div>' +
+        '<span style="background:#fff7ed;color:#c2410c;border:1px solid #fdba74;border-radius:6px;padding:2px 10px;font-size:.72rem;font-weight:600;white-space:nowrap">' + status + '</span>' +
+      '</div>' +
+    '</div>';
+  }).join('');
+
+  secEl.innerHTML = HEADER +
+    '<div style="' + cardStyle + 'margin-bottom:12px;display:flex;justify-content:space-between;align-items:center;padding:14px 20px">' +
+      '<span style="font-size:13px;color:#888">' + data.length + ' fatura(s) encontrada(s)</span>' +
+      '<span style="font-weight:700;font-size:15px;color:#111">Total: ' + totalFmt + '</span>' +
+    '</div>' +
+    '<div style="' + cardStyle + 'padding:0 20px">' + itensPag + pagF.paginacaoHtml + '</div>';
 }
 
 /* ── Banner ── */
@@ -240,13 +398,14 @@ function initBusca() {
 
 /* ── Ícones SVG por categoria ── */
 var ICONES_CAT = {
-  'crlv':       { bg: '#eff6ff', color: '#1d4ed8', svg: '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><polyline points="9 15 11 17 15 13"/></svg>' },
+  'crlv':       { bg: '#fff7ed', color: '#c2410c', svg: '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><polyline points="9 15 11 17 15 13"/></svg>' },
   'crlv-ag':    { bg: '#f5f3ff', color: '#7c3aed', svg: '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><polyline points="9 16 11 18 15 14"/></svg>' },
   'atpv':       { bg: '#fdf4ff', color: '#9333ea', svg: '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="16" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>' },
   'debitos':    { bg: '#fff7ed', color: '#ea580c', svg: '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>' },
   'boletos':    { bg: '#f0fdf4', color: '#16a34a', svg: '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>' },
   'codigo-seg': { bg: '#fef9ec', color: '#d97706', svg: '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>' },
   'despachante':{ bg: '#f8fafc', color: '#475569', svg: '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>' },
+  'com-venda':  { bg: '#f0fdf4', color: '#15803d', svg: '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>' },
 };
 function getIconHtml(cat) {
   var ic = ICONES_CAT[cat] || ICONES_CAT['despachante'];
@@ -260,7 +419,7 @@ function renderServicos(cat, query) {
   query = query || '';
 
   var lista = SERVICOS.filter(function (s) {
-    var catOk = cat === 'todos' || s.cat === cat;
+    var catOk = cat === 'todos' || s.cat === cat || (cat === 'crlv' && s.cat === 'crlv-ag');
     var q = query.toLowerCase();
     var nomeLower = s.nome.toLowerCase();
     var statesLower = (s.states || '').toLowerCase();
@@ -350,6 +509,11 @@ function abrirModal(srv) {
     return;
   }
 
+  if (srv.tipo === 'com-venda') {
+    abrirComunicadoVenda();
+    return;
+  }
+
   /* Impedimentos */
   var impCard = document.getElementById('imp-card');
   var impList = document.getElementById('imp-list');
@@ -375,7 +539,6 @@ function abrirModal(srv) {
 
   if (srv.cat === 'crlv') {
     fields.innerHTML =
-      estadoPicker(srv.uf || '') +
       stepInput('step-placa',   'Placa',                'ABC-1234 ou BRA2E19', 'text', 8, true) +
       stepInput('step-renavam', 'Renavam',               'Renavam',             'numeric', 11, false) +
       stepInput('step-cpf',     'Documento CPF ou CNPJ', 'CPF ou CNPJ',        'text', 18, false);
@@ -510,12 +673,6 @@ async function confirmarPedido() {
   var estado  = ((document.getElementById('step-estado')  || {}).value || '').trim();
 
   /* Validações com feedback visual */
-  if (srv.cat === 'crlv' && !estado) {
-    var picker = document.getElementById('estado-picker');
-    if (picker) picker.classList.add('campo-erro');
-    if (erroBox) { erroBox.textContent = 'Selecione o estado do veículo.'; erroBox.style.display = 'block'; }
-    return;
-  }
   if (!placa && erroStep('step-placa', 'Informe a placa do veículo. Campo obrigatório.')) return;
   if ((srv.cat === 'crlv' || srv.cat === 'crlv-ag' || srv.cat === 'atpv') && !renavam && erroStep('step-renavam', 'Informe o RENAVAM do veículo. Campo obrigatório.')) return;
   if ((srv.cat === 'crlv' || srv.cat === 'crlv-ag' || srv.cat === 'atpv') && !cpf    && erroStep('step-cpf',     'Informe o CPF ou CNPJ do titular. Campo obrigatório.')) return;
@@ -528,7 +685,7 @@ async function confirmarPedido() {
     placa: placa,
     renavam: renavam || undefined,
     cpf: cpf || undefined,
-    uf: uf || estado || undefined,
+    uf: uf || estado || srv.states || undefined,
     preco: srv.preco,
     data: new Date().toLocaleDateString('pt-BR'),
     status: 'aguardando'
@@ -555,14 +712,72 @@ async function confirmarPedido() {
     }
 
     /* 1. Salva o pedido no Supabase com status "aguardando_pagamento" */
-    pedido.status = 'aguardando_pagamento';
     var salvamento = await salvarPedido(pedido, cliente.id);
-    if (salvamento.error) {
-      if (erroBox) { erroBox.textContent = 'Erro ao registrar pedido: ' + salvamento.error.message; erroBox.style.display = 'block'; }
+    if (salvamento.error || !salvamento.data) {
+      if (erroBox) { erroBox.textContent = 'Erro ao registrar pedido: ' + (salvamento.error ? salvamento.error.message : 'Tente novamente.'); erroBox.style.display = 'block'; }
+      return;
+    }
+    var pedidoId = salvamento.data.id;
+
+    /* 2. Pergunta como o cliente quer pagar (só exibe modal se houver preço) */
+    var escolha = null;
+    if (srv.preco > 0) {
+      btn.disabled = false;
+      btn.textContent = btnTextoOriginal;
+      await carregarSaldo();
+      escolha = await abrirModalPagamento(srv.nome, srv.preco);
+      btn.disabled = true;
+      btn.textContent = 'Aguarde...';
+
+      if (!escolha) {
+        /* Usuário fechou o modal — cancela pedido */
+        await _supabase.from('pedidos').delete().eq('id', pedidoId);
+        return;
+      }
+    }
+
+    /* 3a. Pagar com saldo da plataforma */
+    if (escolha === 'saldo') {
+      await carregarSaldo();
+      if (saldoAtual < srv.preco) {
+        var erroModalEl = document.getElementById('pagto-modal-erro');
+        if (erroModalEl) {
+          erroModalEl.textContent = 'Saldo insuficiente (' + formatarReais(saldoAtual) + '). Recarregue ou pague via Mercado Pago.';
+          erroModalEl.style.display = 'block';
+        }
+        fecharModalPagamento(null);
+        await _supabase.from('pedidos').delete().eq('id', pedidoId);
+        return;
+      }
+
+      /* Débita saldo */
+      var saldoAntes  = saldoAtual;
+      var saldoDepois = saldoAntes - srv.preco;
+
+      await _supabase.from('clientes').update({ saldo: saldoDepois }).eq('id', cliente.id);
+      await _supabase.from('transacoes_saldo').insert({
+        cliente_id:      cliente.id,
+        tipo:            'debito',
+        valor:           srv.preco,
+        descricao:       'Pagamento: ' + srv.nome,
+        pedido_id:       pedidoId,
+        saldo_anterior:  saldoAntes,
+        saldo_posterior: saldoDepois,
+      });
+
+      /* Atualiza pedido para "aguardando" direto */
+      await _supabase.from('pedidos').update({
+        status:            'aguardando',
+        mp_payment_status: 'saldo_plataforma',
+      }).eq('id', pedidoId);
+
+      atualizarSaldoBadges(saldoDepois);
+      fecharStep();
+      mostrarToast('Pedido pago com saldo! Aguarde o processamento.', 'sucesso');
       return;
     }
 
-    /* 2. Solicita preferência de pagamento ao backend */
+    /* 3b. Pagar via Mercado Pago */
     var resposta = await fetch(BACKEND_URL + '/api/create-preference', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -572,7 +787,8 @@ async function confirmarPedido() {
         placa:         placa,
         clienteId:     cliente.id,
         clienteEmail:  cliente.email  || '',
-        clienteNome:   cliente.nome   || '',
+        clienteNome:   cliente.nomeCompleto || '',
+        pedidoId:      pedidoId,
       }),
     });
 
@@ -583,10 +799,8 @@ async function confirmarPedido() {
     }
 
     var dados = await resposta.json();
-
-    /* 3. Redireciona para o Checkout Pro */
     fecharStep();
-    window.location.href = dados.init_point;
+    window.location.href = dados.sandbox_init_point || dados.init_point;
 
   } catch (e) {
     console.error('[confirmarPedido]', e);
@@ -594,6 +808,104 @@ async function confirmarPedido() {
   } finally {
     btn.disabled = false;
     btn.textContent = btnTextoOriginal;
+  }
+}
+
+/* ── Delegação de clique para botão repagar ── */
+document.addEventListener('click', function(e) {
+  var btn = e.target.closest('[data-repagar-id]');
+  if (btn) {
+    e.preventDefault();
+    e.stopPropagation();
+    repagarPedido(btn.getAttribute('data-repagar-id'));
+  }
+});
+
+/* ── Repagar pedido expirado/recusado ── */
+async function repagarPedido(pedidoId) {
+  try {
+    var cliente = _clienteCache || await getClienteAtual();
+    if (!cliente) { mostrarToast('Sessão expirada. Faça login novamente.', 'erro'); return; }
+
+    var { data: pedido, error: errPedido } = await _supabase
+      .from('pedidos')
+      .select('*')
+      .eq('id', pedidoId)
+      .single();
+
+    if (errPedido || !pedido) {
+      mostrarToast('Pedido não encontrado.', 'erro');
+      return;
+    }
+
+    var preco = parseFloat(pedido.preco || 0);
+    if (preco <= 0) {
+      mostrarToast('Este pedido não possui valor para pagamento.', 'erro');
+      return;
+    }
+
+    await carregarSaldo();
+    var escolha = await abrirModalPagamento(pedido.servico || 'Serviço', preco);
+    if (!escolha) return;
+
+    if (escolha === 'saldo') {
+      await carregarSaldo();
+      if (saldoAtual < preco) {
+        mostrarToast('Saldo insuficiente (' + formatarReais(saldoAtual) + '). Recarregue ou pague via Mercado Pago.', 'erro');
+        return;
+      }
+
+      var saldoAntes  = saldoAtual;
+      var saldoDepois = saldoAntes - preco;
+
+      await _supabase.from('clientes').update({ saldo: saldoDepois }).eq('id', cliente.id);
+      await _supabase.from('transacoes_saldo').insert({
+        cliente_id:      cliente.id,
+        tipo:            'debito',
+        valor:           preco,
+        descricao:       'Pagamento: ' + (pedido.servico || 'Serviço'),
+        pedido_id:       pedidoId,
+        saldo_anterior:  saldoAntes,
+        saldo_posterior: saldoDepois,
+      });
+
+      await _supabase.from('pedidos').update({
+        status:            'aguardando',
+        mp_payment_status: 'saldo_plataforma',
+      }).eq('id', pedidoId);
+
+      atualizarSaldoBadges(saldoDepois);
+      mostrarToast('Pedido pago com saldo! Aguarde o processamento.', 'sucesso');
+      renderPedidosUnificados();
+      return;
+    }
+
+    var resposta = await fetch(BACKEND_URL + '/api/create-preference', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        servico:       pedido.servico || 'Serviço',
+        preco:         preco,
+        placa:         pedido.placa || 'N/A',
+        clienteId:     cliente.id,
+        clienteEmail:  cliente.email  || '',
+        clienteNome:   cliente.nomeCompleto || '',
+        pedidoId:      pedidoId,
+      }),
+    });
+
+    if (!resposta.ok) {
+      var err = await resposta.json().catch(function() { return {}; });
+      mostrarToast(err.erro || 'Erro ao gerar novo pagamento. Tente novamente.', 'erro');
+      return;
+    }
+
+    var dados = await resposta.json();
+    window.location.href = dados.sandbox_init_point || dados.init_point;
+
+  } catch (e) {
+    console.error('[repagarPedido]', e);
+    mostrarToast('Erro inesperado. Verifique sua conexão e tente novamente.', 'erro');
   }
 }
 
@@ -684,9 +996,12 @@ async function renderPedidosUnificados() {
   var todos = await getPedidosDoCliente();
   var lista = todos;
 
-  /* Filtro por categoria */
+  /* Filtro por categoria — crlv inclui agendados */
   if (cat !== 'todos') {
-    lista = lista.filter(function (p) { return p.categoria === cat; });
+    lista = lista.filter(function (p) {
+      if (cat === 'crlv') return p.categoria === 'crlv' || p.categoria === 'crlv-ag';
+      return p.categoria === cat;
+    });
   }
 
   /* Filtro por status */
@@ -699,14 +1014,17 @@ async function renderPedidosUnificados() {
     return;
   }
 
-  el.innerHTML = lista.map(function (p) {
+  var pag = aplicarPaginacao(lista, 'pedidos', 'renderPedidosUnificados()');
+  var listaPag = pag.slice;
+
+  el.innerHTML = listaPag.map(function (p) {
     var cat = p.categoria || 'despachante';
     var preco = (!p.preco || p.preco === 0) ? 'Grátis' : 'R$ ' + parseFloat(p.preco).toFixed(2).replace('.', ',');
     var ic = ICONES_CAT[cat] || ICONES_CAT['despachante'];
     var iconHtml = '<div style="width:40px;height:40px;border-radius:10px;background:' + ic.bg + ';display:flex;align-items:center;justify-content:center;flex-shrink:0;color:' + ic.color + '">' + ic.svg + '</div>';
     var data = p.criado_em ? new Date(p.criado_em).toLocaleDateString('pt-BR') : '—';
-    var statusLabel = { aguardando: 'Aguardando', aceito: 'Aceito', negado: 'Recusado', concluido: 'Concluído' }[p.status] || (p.status || 'aguardando');
-    var statusCor = { aguardando: '#f59e0b', aceito: '#3b82f6', negado: '#ef4444', concluido: '#10b981' }[p.status] || '#f59e0b';
+    var statusLabel = { aguardando: 'Aguardando', aceito: 'Aceito', negado: 'Recusado', concluido: 'Concluído', aguardando_pagamento: 'Ag. Pagamento', pagamento_negado: 'Pagamento Recusado' }[p.status] || (p.status || 'aguardando');
+    var statusCor = '#f97316';
     var arquivoHtml = p.arquivo_url
       ? '<a href="' + p.arquivo_url + '" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:5px;margin-top:6px;font-size:.78rem;color:#0d9488;font-weight:600;text-decoration:none;background:#f0fdfa;border:1px solid #99f6e4;border-radius:6px;padding:3px 10px">📄 Ver documento</a>'
       : '';
@@ -717,23 +1035,40 @@ async function renderPedidosUnificados() {
         '<strong style="display:block;margin-bottom:2px">❌ Pedido recusado</strong>' +
         '<span style="color:#b91c1c">' + motivo + '</span>' +
       '</div>';
+    } else if (p.status === 'pagamento_negado') {
+      recusaHtml = '<div style="margin-top:8px;padding:8px 12px;background:#fef2f2;border:1px solid #fecaca;border-radius:8px;font-size:.8rem;color:#991b1b;line-height:1.45">' +
+        '<strong style="display:block;margin-bottom:2px">💳 Pagamento recusado</strong>' +
+        '<span style="color:#b91c1c">Seu pagamento não foi aprovado. Clique abaixo para tentar novamente.</span>' +
+      '</div>';
+    } else if (p.status === 'aguardando_pagamento') {
+      recusaHtml = '<div style="margin-top:8px;padding:8px 12px;background:#fff7ed;border:1px solid #fdba74;border-radius:8px;font-size:.8rem;color:#c2410c;line-height:1.45">' +
+        '<strong style="display:block;margin-bottom:2px">⏳ Aguardando confirmação do pagamento</strong>' +
+        '<span style="color:#ea580c">Se o pagamento expirou, clique abaixo para gerar um novo.</span>' +
+      '</div>';
     } else if (p.observacao_admin) {
       recusaHtml = '<div style="font-size:.78rem;color:#64748b;margin-top:4px">📝 ' + p.observacao_admin + '</div>';
     }
-    return '<div class="srv-card">' +
-      iconHtml +
-      '<div class="srv-card-body">' +
-        '<div class="srv-card-name">' + (p.servico || '—') + '</div>' +
-        '<div class="srv-card-sub">' + (p.placa ? 'Placa: ' + p.placa : '') + (p.uf ? ' &nbsp;·&nbsp; ' + p.uf : '') + ' &nbsp;·&nbsp; ' + data + '</div>' +
-        arquivoHtml +
-        recusaHtml +
+    var repagarBtn = (p.status === 'pagamento_negado' || p.status === 'aguardando_pagamento')
+      ? '<div style="padding:0 20px 13px"><button data-repagar-id="' + p.id + '" style="width:100%;padding:10px 14px;background:#f97316;color:#fff;border:none;border-radius:8px;font-size:.85rem;font-weight:700;cursor:pointer;font-family:inherit;transition:background .15s;position:relative;z-index:2">' +
+        (p.status === 'pagamento_negado' ? '🔄 Pagar novamente' : '🔄 Gerar novo pagamento') + '</button></div>'
+      : '';
+    return '<div style="border-bottom:1px solid var(--border)">' +
+      '<div class="srv-card" style="border-bottom:none">' +
+        iconHtml +
+        '<div class="srv-card-body">' +
+          '<div class="srv-card-name">' + (p.servico || '—') + '</div>' +
+          '<div class="srv-card-sub">' + (p.placa ? 'Placa: ' + p.placa : '') + (p.uf ? ' &nbsp;·&nbsp; ' + p.uf : '') + ' &nbsp;·&nbsp; ' + data + '</div>' +
+          arquivoHtml +
+          recusaHtml +
+        '</div>' +
+        '<div class="srv-card-right">' +
+          '<span class="srv-card-price">' + preco + '</span>' +
+          '<span class="pedido-status-badge" style="background:' + statusCor + '20;color:' + statusCor + ';border:1px solid ' + statusCor + '40;border-radius:6px;padding:2px 10px;font-size:.75rem;font-weight:600">' + statusLabel + '</span>' +
+        '</div>' +
       '</div>' +
-      '<div class="srv-card-right">' +
-        '<span class="srv-card-price">' + preco + '</span>' +
-        '<span class="pedido-status-badge" style="background:' + statusCor + '20;color:' + statusCor + ';border:1px solid ' + statusCor + '40;border-radius:6px;padding:2px 10px;font-size:.75rem;font-weight:600">' + statusLabel + '</span>' +
-      '</div>' +
+      repagarBtn +
     '</div>';
-  }).join('');
+  }).join('') + pag.paginacaoHtml;
 }
 
 /* ── Render pedidos filtrados por seção ── */
@@ -749,20 +1084,27 @@ async function renderPedidosFiltrados(sec) {
   if (!el) return;
   el.innerHTML = '<div style="padding:32px;text-align:center;color:#94a3b8;font-size:13px;">Carregando histórico...</div>';
 
-  var lista = await getPedidosDoCliente();
+  var todos = await getPedidosDoCliente();
+  var lista = todos.filter(function (p) { return p.status === 'concluido'; });
 
   if (lista.length === 0) {
-    el.innerHTML = '<div class="empty-state"><div class="es-icon">📂</div><div class="es-title">Nenhum pedido</div><div class="es-text">Você ainda não realizou pedidos nesta categoria.</div></div>';
+    el.innerHTML = '<div class="empty-state"><div class="es-icon">✅</div><div class="es-title">Nenhum pedido concluído</div><div class="es-text">Seus pedidos finalizados aparecerão aqui.</div></div>';
     return;
   }
 
-  el.innerHTML = lista.map(function (p) {
+  var pag = aplicarPaginacao(lista, 'historico', 'renderPedidosFiltrados(\'historico\')');
+  var listaPag = pag.slice;
+
+  el.innerHTML = listaPag.map(function (p) {
     var preco = (!p.preco || p.preco === 0) ? 'Grátis' : 'R$ ' + parseFloat(p.preco).toFixed(2).replace('.', ',');
     var data = p.criado_em ? new Date(p.criado_em).toLocaleDateString('pt-BR') : '—';
-    var statusLabel = { aguardando: 'Aguardando', aceito: 'Aceito', negado: 'Recusado', concluido: 'Concluído' }[p.status] || (p.status || 'Aguardando');
-    var statusCor = { aguardando: '#f59e0b', aceito: '#3b82f6', negado: '#ef4444', concluido: '#10b981' }[p.status] || '#f59e0b';
+    var statusLabel = { aguardando: 'Aguardando', aceito: 'Aceito', negado: 'Recusado', concluido: 'Concluído', aguardando_pagamento: 'Ag. Pagamento', pagamento_negado: 'Pagamento Recusado' }[p.status] || (p.status || 'Aguardando');
+    var statusCor = '#f97316';
     var recusaInfo = (p.status === 'negado' && p.observacao_admin)
       ? '<div style="font-size:.75rem;color:#b91c1c;margin-top:3px">Motivo: ' + p.observacao_admin + '</div>'
+      : '';
+    var repagarBtn = (p.status === 'pagamento_negado' || p.status === 'aguardando_pagamento')
+      ? '<button data-repagar-id="' + p.id + '" style="margin-top:4px;padding:5px 12px;background:#f97316;color:#fff;border:none;border-radius:6px;font-size:.72rem;font-weight:700;cursor:pointer;font-family:inherit">🔄 Pagar novamente</button>'
       : '';
     return '<div class="pedido-item">' +
       '<div class="pedido-status-dot" style="background:' + statusCor + '"></div>' +
@@ -774,9 +1116,10 @@ async function renderPedidosFiltrados(sec) {
       '<div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">' +
         '<div class="pedido-item-price">' + preco + '</div>' +
         '<span style="background:' + statusCor + '20;color:' + statusCor + ';border:1px solid ' + statusCor + '40;border-radius:6px;padding:2px 8px;font-size:.72rem;font-weight:600;white-space:nowrap">' + statusLabel + '</span>' +
+        repagarBtn +
       '</div>' +
     '</div>';
-  }).join('');
+  }).join('') + pag.paginacaoHtml;
 }
 
 /* ── Tabela de valores ── */
@@ -889,4 +1232,565 @@ function exibirMsgSenha(el, tipo, texto) {
   el.textContent = texto;
   el.className = 'perfil-senha-msg ' + tipo;
   el.style.display = 'block';
+}
+
+/* ═══════════════════════════════════════════════
+   SALDO E RECARGA
+   ═══════════════════════════════════════════════ */
+
+var saldoAtual = 0;
+var recargaAtiva = null;
+var saldoPollingTimer = null;
+
+function formatarReais(v) {
+  return 'R$ ' + parseFloat(v || 0).toFixed(2).replace('.', ',');
+}
+
+function atualizarSaldoBadges(valor) {
+  saldoAtual = parseFloat(valor || 0);
+  var fmt = formatarReais(saldoAtual);
+  var badge = document.getElementById('sb-saldo-badge');
+  if (badge) badge.textContent = fmt;
+  var display = document.getElementById('saldo-valor-display');
+  if (display) display.textContent = fmt;
+  var pagtoDisp = document.getElementById('pagto-saldo-disp');
+  if (pagtoDisp) pagtoDisp.textContent = fmt;
+  var statSaldo = document.getElementById('stat-saldo');
+  if (statSaldo) statSaldo.textContent = fmt;
+}
+
+async function carregarSaldo() {
+  var cliente = await getClienteAtual();
+  if (!cliente) return;
+  var { data } = await _supabase
+    .from('clientes')
+    .select('saldo')
+    .eq('id', cliente.id)
+    .single();
+  atualizarSaldoBadges(data?.saldo || 0);
+}
+
+async function carregarHistoricoTransacoes() {
+  var cliente = await getClienteAtual();
+  if (!cliente) return;
+  var lista = document.getElementById('saldo-historico-lista');
+  if (!lista) return;
+
+  var { data } = await _supabase
+    .from('transacoes_saldo')
+    .select('*')
+    .eq('cliente_id', cliente.id)
+    .order('criado_em', { ascending: false })
+    .limit(20);
+
+  if (!data || data.length === 0) {
+    lista.innerHTML = '<div class="saldo-historico-vazio">Nenhuma transação ainda.</div>';
+    return;
+  }
+
+  lista.innerHTML = data.map(function(t) {
+    var isCredito = t.tipo === 'credito';
+    var sinal = isCredito ? '+' : '−';
+    var cor   = isCredito ? '#16a34a' : '#ef4444';
+    var desc  = t.descricao || (isCredito ? 'Recarga' : 'Pagamento de serviço');
+    var data_ = t.criado_em ? new Date(t.criado_em).toLocaleDateString('pt-BR', { day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit' }) : '—';
+    return '<div class="saldo-transacao">' +
+      '<div class="saldo-transacao-left">' +
+        '<div class="saldo-transacao-desc">' + desc + '</div>' +
+        '<div class="saldo-transacao-data">' + data_ + '</div>' +
+      '</div>' +
+      '<div class="saldo-transacao-valor" style="color:' + cor + '">' + sinal + ' ' + formatarReais(t.valor) + '</div>' +
+    '</div>';
+  }).join('');
+}
+
+function initSaldo() {
+  carregarSaldo();
+
+  var btnAbrir = document.getElementById('saldo-btn-abrir');
+  if (btnAbrir) btnAbrir.addEventListener('click', function() {
+    document.getElementById('saldo-recarga-box').style.display = 'block';
+    document.getElementById('saldo-pix-box').style.display = 'none';
+    document.getElementById('saldo-recarga-erro').style.display = 'none';
+    document.getElementById('saldo-valor-input').value = '';
+    document.querySelectorAll('.saldo-valor-btn').forEach(function(b) { b.classList.remove('active'); });
+  });
+
+  /* Valores rápidos */
+  document.querySelectorAll('.saldo-valor-btn').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      document.querySelectorAll('.saldo-valor-btn').forEach(function(b) { b.classList.remove('active'); });
+      btn.classList.add('active');
+      document.getElementById('saldo-valor-input').value = btn.getAttribute('data-valor');
+    });
+  });
+
+  var btnGerar = document.getElementById('saldo-btn-gerar-pix');
+  if (btnGerar) btnGerar.addEventListener('click', gerarPixRecarga);
+
+  var btnNova = document.getElementById('saldo-pix-nova-btn');
+  if (btnNova) btnNova.addEventListener('click', function() {
+    document.getElementById('saldo-pix-box').style.display = 'none';
+    document.getElementById('saldo-recarga-box').style.display = 'block';
+    document.getElementById('saldo-valor-input').value = '';
+    document.querySelectorAll('.saldo-valor-btn').forEach(function(b) { b.classList.remove('active'); });
+    if (saldoPollingTimer) { clearInterval(saldoPollingTimer); saldoPollingTimer = null; }
+  });
+
+  var btnCopiar = document.getElementById('saldo-pix-copia-btn');
+  if (btnCopiar) btnCopiar.addEventListener('click', function() {
+    var inp = document.getElementById('saldo-pix-copia');
+    if (!inp || !inp.value) return;
+    navigator.clipboard.writeText(inp.value).then(function() {
+      btnCopiar.textContent = '✔ Copiado!';
+      setTimeout(function() { btnCopiar.textContent = 'Copiar'; }, 2000);
+    });
+  });
+}
+
+async function gerarPixRecarga() {
+  var erroEl = document.getElementById('saldo-recarga-erro');
+  erroEl.style.display = 'none';
+
+  var valorStr = document.getElementById('saldo-valor-input').value;
+  var valor = parseFloat(valorStr);
+  if (!valor || valor <= 0) {
+    erroEl.textContent = 'Informe um valor válido para recarregar.';
+    erroEl.style.display = 'block';
+    return;
+  }
+
+  var btn = document.getElementById('saldo-btn-gerar-pix');
+  var orig = btn.innerHTML;
+  btn.disabled = true;
+  btn.innerHTML = '⏳ Gerando PIX...';
+
+  try {
+    var cliente = await getClienteAtual();
+    if (!cliente) { mostrarToast('Sessão expirada. Faça login novamente.', 'erro'); return; }
+
+    /* Cria registro de recarga no Supabase */
+    var { data: recarga, error: errRec } = await _supabase
+      .from('recargas')
+      .insert({ cliente_id: cliente.id, valor: valor, status: 'pendente' })
+      .select('id')
+      .single();
+
+    if (errRec || !recarga) {
+      erroEl.textContent = 'Erro ao registrar recarga. Tente novamente.';
+      erroEl.style.display = 'block';
+      return;
+    }
+
+    recargaAtiva = recarga.id;
+
+    /* Solicita PIX ao backend */
+    var resp = await fetch(BACKEND_URL + '/api/criar-pix-recarga', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        valor:        valor,
+        clienteId:    cliente.id,
+        clienteEmail: cliente.email || '',
+        clienteNome:  cliente.nomeCompleto || '',
+        clienteCpf:   cliente.cpf || '',
+        recargaId:    recarga.id,
+      }),
+    });
+
+    if (!resp.ok) {
+      var err = await resp.json().catch(function() { return {}; });
+      var msgErro = err.erro || 'Erro ao gerar PIX. Tente novamente.';
+      if (!cliente.cpf) msgErro = 'CPF não cadastrado. Acesse seu Perfil e adicione seu CPF antes de recarregar.';
+      erroEl.textContent = msgErro;
+      erroEl.style.display = 'block';
+      return;
+    }
+
+    var pix = await resp.json();
+
+    /* Salva payment_id na recarga */
+    await _supabase.from('recargas').update({
+      mp_payment_id: String(pix.paymentId),
+      pix_copia_cola: pix.copiaECola,
+      pix_expira_em: pix.expiracao,
+    }).eq('id', recarga.id);
+
+    /* Exibe QR Code */
+    document.getElementById('saldo-recarga-box').style.display = 'none';
+    document.getElementById('saldo-pix-box').style.display = 'block';
+    document.getElementById('saldo-pix-valor-label').textContent = 'Valor: ' + formatarReais(valor);
+    document.getElementById('saldo-pix-copia').value = pix.copiaECola || '';
+
+    var qrImg = document.getElementById('saldo-pix-qr');
+    if (pix.qrCode) {
+      qrImg.src = 'data:image/png;base64,' + pix.qrCode;
+      qrImg.style.display = 'block';
+    } else {
+      qrImg.style.display = 'none';
+    }
+
+    /* Polling: verifica se saldo foi creditado a cada 5s por até 10min */
+    if (saldoPollingTimer) clearInterval(saldoPollingTimer);
+    var tentativas = 0;
+    saldoPollingTimer = setInterval(async function() {
+      tentativas++;
+      var { data: rec } = await _supabase
+        .from('recargas')
+        .select('status')
+        .eq('id', recargaAtiva)
+        .single();
+      if (rec && rec.status === 'pago') {
+        clearInterval(saldoPollingTimer);
+        saldoPollingTimer = null;
+        await carregarSaldo();
+        await carregarHistoricoTransacoes();
+        mostrarToast('Saldo de ' + formatarReais(valor) + ' creditado com sucesso!', 'sucesso');
+        document.getElementById('saldo-pix-box').style.display = 'none';
+        document.getElementById('saldo-recarga-box').style.display = 'none';
+      }
+      if (tentativas >= 120) { clearInterval(saldoPollingTimer); saldoPollingTimer = null; }
+    }, 5000);
+
+  } catch (e) {
+    console.error('[gerarPixRecarga]', e);
+    erroEl.textContent = 'Erro inesperado. Verifique sua conexão.';
+    erroEl.style.display = 'block';
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = orig;
+  }
+}
+
+/* ═══════════════════════════════════════════════
+   MODAL DE ESCOLHA DE PAGAMENTO
+   ═══════════════════════════════════════════════ */
+
+var pagtoResolve = null;
+
+function initModalPagamento() {
+  document.getElementById('pagto-modal-close').addEventListener('click', function() {
+    fecharModalPagamento(null);
+  });
+  document.getElementById('pagto-modal-overlay').addEventListener('click', function(e) {
+    if (e.target === this) fecharModalPagamento(null);
+  });
+  document.getElementById('pagto-opcao-saldo').addEventListener('click', function() {
+    fecharModalPagamento('saldo');
+  });
+  document.getElementById('pagto-opcao-mp').addEventListener('click', function() {
+    fecharModalPagamento('mp');
+  });
+}
+
+function abrirModalPagamento(nomeServico, valor) {
+  document.getElementById('pagto-modal-servico').textContent = nomeServico;
+  document.getElementById('pagto-modal-valor').textContent = formatarReais(valor);
+  document.getElementById('pagto-modal-erro').style.display = 'none';
+  document.getElementById('pagto-saldo-disp').textContent = formatarReais(saldoAtual);
+
+  /* Destaca opção de saldo se suficiente */
+  var opcaoSaldo = document.getElementById('pagto-opcao-saldo');
+  if (saldoAtual >= valor) {
+    opcaoSaldo.classList.remove('pagto-opcao--sem-saldo');
+  } else {
+    opcaoSaldo.classList.add('pagto-opcao--sem-saldo');
+  }
+
+  document.getElementById('pagto-modal-overlay').style.display = 'flex';
+
+  return new Promise(function(resolve) { pagtoResolve = resolve; });
+}
+
+function fecharModalPagamento(escolha) {
+  document.getElementById('pagto-modal-overlay').style.display = 'none';
+  if (pagtoResolve) { pagtoResolve(escolha); pagtoResolve = null; }
+}
+
+/* ═══════════════════════════════════════════════
+   COMUNICADO DE VENDA
+   ═══════════════════════════════════════════════ */
+
+function abrirComunicadoVenda() {
+  document.querySelector('.servicos-section').style.display = 'none';
+  var wrap = document.getElementById('cv-form-wrap');
+  wrap.style.display = 'flex';
+  wrap.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function fecharComunicadoVenda() {
+  document.getElementById('cv-form-wrap').style.display = 'none';
+  document.querySelector('.servicos-section').style.display = '';
+  servicoSelecionado = null;
+}
+
+function limparComunicado() {
+  var ids = [
+    'cv-vend-cpf','cv-vend-nome','cv-data-venda','cv-valor-venda',
+    'cv-comp-cpf','cv-comp-nome','cv-cep','cv-logradouro','cv-numero',
+    'cv-bairro','cv-complemento','cv-cidade-comp','cv-cidade-auto','cv-uf',
+    'cv-placa','cv-renavam','cv-ano-fab','cv-ano-mod',
+    'cv-crv-num','cv-crv-seg','cv-crv-via','cv-crv-data'
+  ];
+  ids.forEach(function(id) {
+    var el = document.getElementById(id);
+    if (el) el.value = id === 'cv-crv-via' ? '1' : '';
+  });
+  ['cv-vend-tipo','cv-comp-sol','cv-comp-tipo'].forEach(function(id) {
+    var el = document.getElementById(id);
+    if (el) el.selectedIndex = 0;
+  });
+  var ufEl = document.getElementById('cv-crv-uf');
+  if (ufEl) ufEl.value = 'SP';
+  var erroEl = document.getElementById('cv-erro');
+  if (erroEl) erroEl.style.display = 'none';
+  document.querySelectorAll('#cv-form-wrap .campo-erro').forEach(function(el) {
+    el.classList.remove('campo-erro');
+  });
+}
+
+function initComunicado() {
+  var back = document.getElementById('cv-back-btn');
+  if (back) back.addEventListener('click', fecharComunicadoVenda);
+
+  var limpar = document.getElementById('cv-btn-limpar');
+  if (limpar) limpar.addEventListener('click', limparComunicado);
+
+  var enviar = document.getElementById('cv-btn-enviar');
+  if (enviar) enviar.addEventListener('click', enviarComunicado);
+
+  /* Accordion */
+  document.querySelectorAll('.cv-sec-toggle').forEach(function(btn) {
+    btn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      var sec = btn.getAttribute('data-sec');
+      var body = document.getElementById('cv-sec-body-' + sec);
+      if (!body) return;
+      var collapsed = body.classList.toggle('collapsed');
+      btn.textContent = collapsed ? '+' : '−';
+    });
+  });
+  document.querySelectorAll('.cv-sec-header').forEach(function(hdr) {
+    hdr.addEventListener('click', function(e) {
+      if (e.target.classList.contains('cv-sec-toggle')) return;
+      var sec = hdr.getAttribute('data-sec');
+      var body = document.getElementById('cv-sec-body-' + sec);
+      var btn  = hdr.querySelector('.cv-sec-toggle');
+      if (!body) return;
+      var collapsed = body.classList.toggle('collapsed');
+      if (btn) btn.textContent = collapsed ? '+' : '−';
+    });
+  });
+
+  /* Botões de copiar */
+  document.querySelectorAll('.cv-copy-btn').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      var targetId = btn.getAttribute('data-target');
+      var el = document.getElementById(targetId);
+      if (!el || !el.value) return;
+      navigator.clipboard.writeText(el.value).then(function() {
+        btn.classList.add('copiado');
+        var original = btn.innerHTML;
+        btn.innerHTML = '<svg width="13" height="13" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>';
+        setTimeout(function() {
+          btn.classList.remove('copiado');
+          btn.innerHTML = original;
+        }, 1500);
+      });
+    });
+  });
+
+  /* CEP auto-fill */
+  var cepEl = document.getElementById('cv-cep');
+  if (cepEl) {
+    cepEl.addEventListener('input', function() {
+      var cep = cepEl.value.replace(/\D/g, '');
+      if (cep.length === 8) buscarCep(cep);
+    });
+  }
+
+  /* Máscaras */
+  aplicarMascaraCv('cv-vend-cpf', mascaraCpfCnpj);
+  aplicarMascaraCv('cv-comp-cpf', mascaraCpfCnpj);
+  aplicarMascaraCv('cv-data-venda', mascaraData);
+  aplicarMascaraCv('cv-crv-data', mascaraData);
+  aplicarMascaraCv('cv-cep', mascaraCep);
+}
+
+function aplicarMascaraCv(id, fn) {
+  var el = document.getElementById(id);
+  if (el) el.addEventListener('input', function() { el.value = fn(el.value); });
+}
+function mascaraCpfCnpj(v) {
+  v = v.replace(/\D/g, '');
+  if (v.length <= 11) {
+    v = v.replace(/(\d{3})(\d)/, '$1.$2');
+    v = v.replace(/(\d{3})(\d)/, '$1.$2');
+    v = v.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+  } else {
+    v = v.replace(/^(\d{2})(\d)/, '$1.$2');
+    v = v.replace(/^(\d{2})\.(\d{3})(\d)/, '$1.$2.$3');
+    v = v.replace(/\.(\d{3})(\d)/, '.$1/$2');
+    v = v.replace(/(\d{4})(\d)/, '$1-$2');
+  }
+  return v;
+}
+function mascaraData(v) {
+  v = v.replace(/\D/g, '');
+  v = v.replace(/(\d{2})(\d)/, '$1/$2');
+  v = v.replace(/(\d{2})(\d)/, '$1/$2');
+  return v.substring(0, 10);
+}
+function mascaraCep(v) {
+  v = v.replace(/\D/g, '');
+  v = v.replace(/(\d{5})(\d)/, '$1-$2');
+  return v.substring(0, 9);
+}
+
+async function buscarCep(cep) {
+  try {
+    var r = await fetch('https://viacep.com.br/ws/' + cep + '/json/');
+    var d = await r.json();
+    if (d.erro) return;
+    var set = function(id, val) { var el = document.getElementById(id); if (el) el.value = val || ''; };
+    set('cv-logradouro', d.logradouro);
+    set('cv-bairro', d.bairro);
+    set('cv-cidade-auto', d.localidade);
+    set('cv-uf', d.uf);
+    set('cv-cidade-comp', d.localidade);
+  } catch (e) { /* falha silenciosa */ }
+}
+
+function cvVal(id) {
+  var el = document.getElementById(id);
+  return el ? el.value.trim() : '';
+}
+
+function cvErroCampo(id, msg) {
+  var el = document.getElementById(id);
+  if (el) el.classList.add('campo-erro');
+  var erroEl = document.getElementById('cv-erro');
+  if (erroEl) { erroEl.textContent = msg; erroEl.style.display = 'block'; }
+  if (el) el.focus();
+  return true;
+}
+
+async function enviarComunicado() {
+  /* Limpa erros anteriores */
+  document.querySelectorAll('#cv-form-wrap .campo-erro').forEach(function(el) { el.classList.remove('campo-erro'); });
+  var erroEl = document.getElementById('cv-erro');
+  if (erroEl) erroEl.style.display = 'none';
+
+  /* Validações obrigatórias */
+  if (!cvVal('cv-vend-cpf'))   { cvErroCampo('cv-vend-cpf',  'CPF do vendedor é obrigatório.'); return; }
+  if (!cvVal('cv-vend-nome'))  { cvErroCampo('cv-vend-nome', 'Nome do vendedor é obrigatório.'); return; }
+  if (!cvVal('cv-data-venda')) { cvErroCampo('cv-data-venda','Data da venda é obrigatória.'); return; }
+  if (!cvVal('cv-valor-venda')){ cvErroCampo('cv-valor-venda','Valor da venda é obrigatório.'); return; }
+  if (!cvVal('cv-comp-cpf'))   { cvErroCampo('cv-comp-cpf',  'CPF do comprador é obrigatório.'); return; }
+  if (!cvVal('cv-comp-nome'))  { cvErroCampo('cv-comp-nome', 'Nome do comprador é obrigatório.'); return; }
+  if (!cvVal('cv-cep'))        { cvErroCampo('cv-cep',       'CEP é obrigatório.'); return; }
+  if (!cvVal('cv-numero'))     { cvErroCampo('cv-numero',    'Número do endereço é obrigatório.'); return; }
+  if (!cvVal('cv-placa'))      { cvErroCampo('cv-placa',     'Placa do veículo é obrigatória.'); return; }
+  if (!cvVal('cv-renavam'))    { cvErroCampo('cv-renavam',   'RENAVAM é obrigatório.'); return; }
+  if (!cvVal('cv-ano-fab'))    { cvErroCampo('cv-ano-fab',   'Ano de fabricação é obrigatório.'); return; }
+  if (!cvVal('cv-ano-mod'))    { cvErroCampo('cv-ano-mod',   'Ano do modelo é obrigatório.'); return; }
+  if (!cvVal('cv-crv-num'))    { cvErroCampo('cv-crv-num',   'Número do CRV é obrigatório.'); return; }
+  if (!cvVal('cv-crv-seg'))    { cvErroCampo('cv-crv-seg',   'Código de segurança do CRV é obrigatório.'); return; }
+  if (!cvVal('cv-crv-data'))   { cvErroCampo('cv-crv-data',  'Data de emissão do CRV é obrigatória.'); return; }
+  if (!cvVal('cv-crv-uf'))     { cvErroCampo('cv-crv-uf',    'UF de emissão do CRV é obrigatória.'); return; }
+
+  var btn = document.getElementById('cv-btn-enviar');
+  var original = btn.innerHTML;
+  btn.disabled = true;
+  btn.innerHTML = '⏳ Aguarde...';
+
+  try {
+    var cliente = await getClienteAtual();
+    if (!cliente) { mostrarToast('Sessão expirada. Faça login novamente.', 'erro'); return; }
+
+    /* 1. Salva pedido principal */
+    var pedidoPayload = {
+      cliente_id: cliente.id,
+      servico: 'Comunicado de Venda',
+      categoria: 'com-venda',
+      placa: cvVal('cv-placa').toUpperCase(),
+      renavam: cvVal('cv-renavam'),
+      cpf_cnpj: cvVal('cv-vend-cpf'),
+      uf: cvVal('cv-crv-uf'),
+      preco: 80.00,
+      status: 'aguardando_pagamento',
+      criado_em: new Date().toISOString(),
+    };
+    var { data: pedidoData, error: pedidoErr } = await _supabase
+      .from('pedidos').insert(pedidoPayload).select('id').single();
+    if (pedidoErr || !pedidoData) {
+      if (erroEl) { erroEl.textContent = 'Erro ao registrar pedido. Tente novamente.'; erroEl.style.display = 'block'; }
+      return;
+    }
+    var pedidoId = pedidoData.id;
+
+    /* 2. Salva dados completos do comunicado */
+    await _supabase.from('comunicado_vendas').insert({
+      pedido_id: pedidoId,
+      cliente_id: cliente.id,
+      vendedor_cpf: cvVal('cv-vend-cpf'),
+      vendedor_tipo_pessoa: cvVal('cv-vend-tipo'),
+      vendedor_nome: cvVal('cv-vend-nome'),
+      data_venda: cvVal('cv-data-venda'),
+      valor_venda: cvVal('cv-valor-venda'),
+      comprador_solicitante: cvVal('cv-comp-sol'),
+      comprador_tipo_pessoa: cvVal('cv-comp-tipo'),
+      comprador_cpf: cvVal('cv-comp-cpf'),
+      comprador_nome: cvVal('cv-comp-nome'),
+      cep: cvVal('cv-cep'),
+      logradouro: cvVal('cv-logradouro'),
+      numero: cvVal('cv-numero'),
+      bairro: cvVal('cv-bairro'),
+      complemento: cvVal('cv-complemento'),
+      cidade_comprador: cvVal('cv-cidade-comp'),
+      cidade_auto: cvVal('cv-cidade-auto'),
+      uf_comprador: cvVal('cv-uf'),
+      veiculo_placa: cvVal('cv-placa').toUpperCase(),
+      veiculo_renavam: cvVal('cv-renavam'),
+      ano_fabricacao: cvVal('cv-ano-fab'),
+      ano_modelo: cvVal('cv-ano-mod'),
+      crv_numero: cvVal('cv-crv-num'),
+      crv_codigo_seg: cvVal('cv-crv-seg'),
+      crv_numero_via: cvVal('cv-crv-via') || '1',
+      crv_data_emissao: cvVal('cv-crv-data'),
+      crv_uf_emissao: cvVal('cv-crv-uf'),
+    });
+
+    /* 3. Cria preferência MP e redireciona */
+    var resposta = await fetch(BACKEND_URL + '/api/create-preference', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        servico: 'Comunicado de Venda',
+        preco: 80.00,
+        placa: cvVal('cv-placa').toUpperCase(),
+        clienteId: cliente.id,
+        clienteEmail: cliente.email || '',
+        clienteNome: cliente.nomeCompleto || '',
+        pedidoId: pedidoId,
+      }),
+    });
+
+    if (!resposta.ok) {
+      var err = await resposta.json().catch(function() { return {}; });
+      if (erroEl) { erroEl.textContent = err.erro || 'Erro ao iniciar pagamento.'; erroEl.style.display = 'block'; }
+      return;
+    }
+
+    var dados = await resposta.json();
+    fecharComunicadoVenda();
+    window.location.href = dados.sandbox_init_point || dados.init_point;
+
+  } catch (e) {
+    console.error('[enviarComunicado]', e);
+    if (erroEl) { erroEl.textContent = 'Erro inesperado. Verifique sua conexão.'; erroEl.style.display = 'block'; }
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = original;
+  }
 }

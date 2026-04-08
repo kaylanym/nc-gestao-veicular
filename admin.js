@@ -5,14 +5,44 @@
 var pedidoAtual = null;
 var todosClientes = [];
 
+/* ── Paginação ── */
+var _pagAdm = { pendentes: 1, todos: 1 };
+var POR_PAG_ADM = 10;
+
+function aplicarPaginacaoAdm(lista, secao, renderFn) {
+  var total = lista.length;
+  var totalPags = Math.ceil(total / POR_PAG_ADM) || 1;
+  _pagAdm[secao] = Math.min(_pagAdm[secao] || 1, totalPags);
+  var pag = _pagAdm[secao];
+  var inicio = (pag - 1) * POR_PAG_ADM;
+  var slice = lista.slice(inicio, inicio + POR_PAG_ADM);
+
+  var btns = '';
+  btns += '<button class="pag-btn"' + (pag === 1 ? ' disabled' : '') + ' onclick="_pagAdm[\'' + secao + '\']=' + (pag - 1) + ';' + renderFn + '">‹</button>';
+  for (var i = 1; i <= totalPags; i++) {
+    if (totalPags > 7 && i > 2 && i < totalPags - 1 && Math.abs(i - pag) > 1) {
+      if (i === 3 || i === totalPags - 2) btns += '<span class="pag-info">…</span>';
+      continue;
+    }
+    btns += '<button class="pag-btn' + (i === pag ? ' ativo' : '') + '" onclick="_pagAdm[\'' + secao + '\']=' + i + ';' + renderFn + '">' + i + '</button>';
+  }
+  btns += '<button class="pag-btn"' + (pag === totalPags ? ' disabled' : '') + ' onclick="_pagAdm[\'' + secao + '\']=' + (pag + 1) + ';' + renderFn + '">›</button>';
+
+  var paginacaoHtml = total > POR_PAG_ADM
+    ? '<div class="paginacao">' + btns + '<span class="pag-info">Página ' + pag + ' de ' + totalPags + '</span></div>'
+    : '';
+
+  return { slice: slice, paginacaoHtml: paginacaoHtml };
+}
+
 var CAT_CORES = {
-  'crlv':       { bg: '#eff6ff', color: '#1d4ed8' },
-  'crlv-ag':    { bg: '#f5f3ff', color: '#7c3aed' },
-  'atpv':       { bg: '#fdf4ff', color: '#9333ea' },
+  'crlv':       { bg: '#fff7ed', color: '#c2410c' },
+  'crlv-ag':    { bg: '#fff7ed', color: '#ea580c' },
+  'atpv':       { bg: '#fff7ed', color: '#c2410c' },
   'debitos':    { bg: '#fff7ed', color: '#ea580c' },
-  'boletos':    { bg: '#f0fdf4', color: '#16a34a' },
-  'codigo-seg': { bg: '#fef9ec', color: '#d97706' },
-  'despachante':{ bg: '#f8fafc', color: '#475569' },
+  'boletos':    { bg: '#fff7ed', color: '#ea580c' },
+  'codigo-seg': { bg: '#fff7ed', color: '#c2410c' },
+  'com-venda':  { bg: '#fff7ed', color: '#c2410c' },
 };
 
 /* ─── Init ─── */
@@ -103,7 +133,13 @@ async function getTodosPedidos(filtroStatus, filtroCategoria) {
     .select('*, clientes(id, nome_completo, email)')
     .order('criado_em', { ascending: false });
   if (filtroStatus) query = query.eq('status', filtroStatus);
-  if (filtroCategoria) query = query.eq('categoria', filtroCategoria);
+  if (filtroCategoria) {
+    if (filtroCategoria === 'crlv') {
+      query = query.in('categoria', ['crlv', 'crlv-ag']);
+    } else {
+      query = query.eq('categoria', filtroCategoria);
+    }
+  }
   var res = await query;
   return res.data || [];
 }
@@ -141,12 +177,14 @@ async function renderPedidosFiltradosCat(status, elId, categoria) {
     el.innerHTML = '<div class="adm-empty"><div class="adm-empty-ico">📂</div><div class="adm-empty-title">Nenhum pedido encontrado</div></div>';
     return;
   }
-  el.innerHTML = lista.map(function(p) { return renderCardPedido(p); }).join('');
+  var pag = aplicarPaginacaoAdm(lista, 'pendentes', 'renderPedidosFiltradosCat(\'' + (status||'') + '\',\'' + elId + '\',\'' + (categoria||'') + '\')');
+  el.innerHTML = pag.slice.map(function(p) { return renderCardPedido(p); }).join('') + pag.paginacaoHtml;
   bindBotoesDetalhe(el);
 }
 
 /* ─── Filtro unificado "Todos os Pedidos" ─── */
-async function aplicarFiltrosTodos() {
+async function aplicarFiltrosTodos(resetPag) {
+  if (resetPag !== false) _pagAdm.todos = 1;
   var status  = (document.getElementById('filtro-status') || {}).value || null;
   var cat     = ((document.querySelector('#tabs-todos .adm-cat-tab.active') || {}).getAttribute('data-cat')) || null;
   var q       = ((document.getElementById('filtro-busca') || {}).value || '').toLowerCase().trim();
@@ -202,7 +240,8 @@ function renderListaFiltrada(lista) {
     el.innerHTML = '<div class="adm-empty"><div class="adm-empty-ico">🔍</div><div class="adm-empty-title">Nenhum resultado</div></div>';
     return;
   }
-  el.innerHTML = lista.map(function (p) { return renderCardPedido(p); }).join('');
+  var pag = aplicarPaginacaoAdm(lista, 'todos', 'aplicarFiltrosTodos()');
+  el.innerHTML = pag.slice.map(function (p) { return renderCardPedido(p); }).join('') + pag.paginacaoHtml;
   bindBotoesDetalhe(el);
 }
 
@@ -546,13 +585,13 @@ async function initNovoPedido() {
 
 /* ─── Render card ─── */
 function renderCardPedido(p) {
-  var cat = p.categoria || 'despachante';
-  var cor = CAT_CORES[cat] || CAT_CORES['despachante'];
+  var cat = p.categoria || 'crlv';
+  var cor = CAT_CORES[cat] || CAT_CORES['crlv'];
   var preco = (!p.preco || p.preco == 0) ? 'Grátis' : 'R$ ' + parseFloat(p.preco).toFixed(2).replace('.', ',');
   var data = p.criado_em ? new Date(p.criado_em).toLocaleDateString('pt-BR') : '—';
   var clienteNome = (p.clientes && p.clientes.nome_completo) ? p.clientes.nome_completo : '—';
   var statusCls = 'status-' + (p.status || 'aguardando');
-  var statusLabel = { aguardando: 'Aguardando', aceito: 'Aceito', negado: 'Negado', concluido: 'Concluído' }[p.status] || p.status;
+  var statusLabel = { aguardando: 'Aguardando', aceito: 'Aceito', negado: 'Negado', concluido: 'Concluído', aguardando_pagamento: 'Ag. Pagamento', pagamento_negado: 'Pgto. Negado' }[p.status] || p.status;
 
   return '<div class="pedido-adm-card" data-id="' + p.id + '">' +
     '<div class="pedido-adm-cat-ico" style="background:' + cor.bg + ';color:' + cor.color + '">' +
@@ -702,7 +741,7 @@ async function abrirModal(pedidoId) {
   pedidoAtual = res.data;
   var p = pedidoAtual;
 
-  var statusLabel = { aguardando: 'Aguardando', aceito: 'Aceito', negado: 'Negado', concluido: 'Concluído' }[p.status] || p.status;
+  var statusLabel = { aguardando: 'Aguardando', aceito: 'Aceito', negado: 'Negado', concluido: 'Concluído', aguardando_pagamento: 'Aguardando Pagamento', pagamento_negado: 'Pagamento Negado' }[p.status] || p.status;
   var statusCls = 'status-' + (p.status || 'aguardando');
   var preco = (!p.preco || p.preco == 0) ? 'Grátis' : 'R$ ' + parseFloat(p.preco).toFixed(2).replace('.', ',');
   var data = p.criado_em ? new Date(p.criado_em).toLocaleDateString('pt-BR') : '—';
@@ -710,8 +749,26 @@ async function abrirModal(pedidoId) {
   var clienteEmail = (p.clientes && p.clientes.email) || '—';
   var clienteTel = (p.clientes && p.clientes.telefone) || '—';
 
+  /* Bloqueia o botão "Aceitar" se o pagamento não foi confirmado */
+  var pagamentoPendente = p.status === 'aguardando_pagamento' || p.status === 'pagamento_negado';
+  var btnAceitar = document.getElementById('modal-btn-aceitar');
+  if (btnAceitar) {
+    btnAceitar.disabled = pagamentoPendente;
+    btnAceitar.title = pagamentoPendente ? 'Não é possível aceitar: pagamento não confirmado.' : '';
+  }
+
+  var avisoPagemento = '';
+  if (p.status === 'aguardando_pagamento') {
+    avisoPagemento = '<div style="margin-bottom:12px;padding:10px 14px;background:#f5f3ff;border:1px solid #ddd6fe;border-radius:8px;font-size:.82rem;color:#6d28d9">' +
+      '⏳ <strong>Aguardando confirmação do pagamento</strong> — o pedido só pode ser aceito após o pagamento ser aprovado pelo Mercado Pago.</div>';
+  } else if (p.status === 'pagamento_negado') {
+    avisoPagemento = '<div style="margin-bottom:12px;padding:10px 14px;background:#fef2f2;border:1px solid #fecaca;border-radius:8px;font-size:.82rem;color:#991b1b">' +
+      '💳 <strong>Pagamento recusado pelo Mercado Pago</strong> — não é possível aceitar este pedido. O cliente deve realizar um novo pedido.</div>';
+  }
+
   document.getElementById('modal-titulo').textContent = p.servico || 'Pedido';
   document.getElementById('adm-modal-body').innerHTML =
+    avisoPagemento +
     row('Status', '<span class="status-badge ' + statusCls + '">' + statusLabel + '</span>') +
     row('Cliente', clienteNome) +
     row('E-mail', clienteEmail) +

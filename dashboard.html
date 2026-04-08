@@ -7,13 +7,13 @@
   <link rel="stylesheet" href="dashboard.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 </head>
 <body class="dash-body">
 
   <!-- ══ SIDEBAR ══ -->
   <aside class="sidebar" id="sidebar">
-    <div class="sb-logo">
+    <div class="sb-logo" onclick="window.location.href='index.html'" style="cursor:pointer">
       <div class="sb-logo-icon">
         <span class="sb-logo-monogram">NC</span>
       </div>
@@ -25,7 +25,7 @@
     <nav class="sb-nav">
       <a class="sb-link active" data-section="novo-pedido">
         <svg class="sb-ico" viewBox="0 0 20 20" fill="currentColor"><path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h3a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h3a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"/></svg>
-        Minha Conta
+        Início
       </a>
       <a class="sb-link" data-section="historico">
         <svg class="sb-ico" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"/></svg>
@@ -40,6 +40,12 @@
       </a>
 
       <div class="sb-divider">Financeiro</div>
+
+      <a class="sb-link" data-section="saldo">
+        <svg class="sb-ico" viewBox="0 0 20 20" fill="currentColor"><path d="M4 4a2 2 0 00-2 2v1h16V6a2 2 0 00-2-2H4z"/><path fill-rule="evenodd" d="M18 9H2v5a2 2 0 002 2h12a2 2 0 002-2V9zM4 13a1 1 0 011-1h1a1 1 0 110 2H5a1 1 0 01-1-1zm5-1a1 1 0 100 2h1a1 1 0 100-2H9z" clip-rule="evenodd"/></svg>
+        Meu Saldo
+        <span class="sb-saldo-badge" id="sb-saldo-badge">R$ 0,00</span>
+      </a>
 
       <a class="sb-link" data-section="faturas">
         <svg class="sb-ico" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M4 4a2 2 0 00-2 2v4a2 2 0 002 2V6h10a2 2 0 00-2-2H4zm2 6a2 2 0 012-2h8a2 2 0 012 2v4a2 2 0 01-2 2H8a2 2 0 01-2-2v-4zm6 4a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"/></svg>
@@ -69,6 +75,10 @@
     </nav>
 
     <div class="sb-bottom">
+      <a href="admin.html" class="sb-link" id="link-painel-admin" style="display:none;color:#f97316">
+        <svg class="sb-ico" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-6-3a2 2 0 11-4 0 2 2 0 014 0zm-2 4a5 5 0 00-4.546 2.916A5.986 5.986 0 0010 16a5.986 5.986 0 004.546-2.084A5 5 0 0010 11z" clip-rule="evenodd"/></svg>
+        Painel Admin
+      </a>
       <a href="#" onclick="logout(); return false;" class="sb-link sb-sair">
         <svg class="sb-ico" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 3a1 1 0 00-1 1v12a1 1 0 102 0V4a1 1 0 00-1-1zm10.293 9.293a1 1 0 001.414 1.414l3-3a1 1 0 000-1.414l-3-3a1 1 0 10-1.414 1.414L14.586 9H7a1 1 0 100 2h7.586l-1.293 1.293z" clip-rule="evenodd"/></svg>
         Sair
@@ -112,11 +122,8 @@
             <div class="info-card-value" id="stat-pedidos">0</div>
           </div>
           <div class="info-card">
-            <div class="info-card-label">Pagamento</div>
-            <div class="info-card-value info-mp">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="12" fill="#009ee3"/><path d="M6 12.4c0-3.3 2.7-6 6-6s6 2.7 6 6" stroke="#fff" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="15" r="2" fill="#fff"/></svg>
-              Mercado Pago
-            </div>
+            <div class="info-card-label">Saldo Disponível</div>
+            <div class="info-card-value" id="stat-saldo" style="color:#f97316;font-weight:800">R$ 0,00</div>
           </div>
           <div class="info-card">
             <div class="info-card-label">Suporte</div>
@@ -143,18 +150,357 @@
 
           <!-- Tabs -->
           <div class="srv-tabs">
-            <button class="srv-tab active" data-cat="todos">Todos</button>
             <button class="srv-tab" data-cat="crlv">CRLV-E</button>
-            <button class="srv-tab" data-cat="crlv-ag">Agendados</button>
+            <button class="srv-tab" data-cat="codigo-seg">Cód. Segurança</button>
             <button class="srv-tab" data-cat="atpv">ATPV-E</button>
+            <button class="srv-tab" data-cat="com-venda">Comunicado de Venda</button>
+            <button class="srv-tab active" data-cat="todos">Todos</button>
             <button class="srv-tab srv-tab--breve" data-cat="debitos" disabled title="Em breve">Débitos <span class="tab-breve-tag">Em breve</span></button>
             <button class="srv-tab srv-tab--breve" data-cat="boletos" disabled title="Em breve">Boletos <span class="tab-breve-tag">Em breve</span></button>
-            <button class="srv-tab" data-cat="codigo-seg">Cód. Segurança</button>
-            <button class="srv-tab" data-cat="despachante">Despachante</button>
           </div>
 
           <!-- Lista de serviços -->
           <div class="srv-grid" id="servicos-grid"></div>
+        </div>
+
+        <!-- ─── Formulário Comunicado de Venda ─── -->
+        <div class="cv-form-wrap" id="cv-form-wrap" style="display:none">
+          <button class="pedido-step-back" id="cv-back-btn">
+            <svg width="14" height="14" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd"/></svg>
+            Voltar
+          </button>
+
+          <div class="cv-header">
+            <div class="cv-header-icon">📝</div>
+            <div>
+              <div class="cv-header-title">Comunicado de Venda</div>
+              <div class="cv-header-sub">Campos obrigatórios podem variar por estado. Use apenas números em CPF/Renavam/CEP.</div>
+            </div>
+          </div>
+
+          <!-- Seção 1: Vendedor e Venda -->
+          <div class="cv-section" id="cv-sec-1">
+            <div class="cv-sec-header" data-sec="1">
+              <span class="cv-sec-num">1</span>
+              <span class="cv-sec-title">Vendedor e Venda</span>
+              <button class="cv-sec-toggle" type="button" data-sec="1">−</button>
+            </div>
+            <div class="cv-sec-body" id="cv-sec-body-1">
+              <p class="cv-sec-hint">Preencha primeiro os dados principais. Os demais campos ficam nas próximas etapas.</p>
+              <div class="cv-grid cv-grid-3">
+                <div class="cv-field-wrap">
+                  <label class="cv-label" for="cv-vend-cpf">CPF <span class="req">*</span></label>
+                  <div class="cv-copy-field">
+                    <input class="cv-input" type="text" id="cv-vend-cpf" placeholder="000.000.000-00" maxlength="18" inputmode="numeric">
+                    <button class="cv-copy-btn" type="button" title="Copiar" data-target="cv-vend-cpf">
+                      <svg width="13" height="13" viewBox="0 0 20 20" fill="currentColor"><path d="M8 2a1 1 0 000 2h2a1 1 0 100-2H8z"/><path d="M3 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v6h-4.586l1.293-1.293a1 1 0 00-1.414-1.414l-3 3a1 1 0 000 1.414l3 3a1 1 0 001.414-1.414L10.414 13H15v3a2 2 0 01-2 2H5a2 2 0 01-2-2V5z"/></svg>
+                    </button>
+                  </div>
+                </div>
+                <div class="cv-field-wrap">
+                  <label class="cv-label" for="cv-vend-tipo">Tipo Pessoa <span class="req">*</span></label>
+                  <div class="cv-copy-field">
+                    <select class="cv-input" id="cv-vend-tipo">
+                      <option value="fisica">Física</option>
+                      <option value="juridica">Jurídica</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="cv-field-wrap">
+                  <label class="cv-label" for="cv-vend-nome">Nome do vendedor <span class="req">*</span></label>
+                  <div class="cv-copy-field">
+                    <input class="cv-input" type="text" id="cv-vend-nome" placeholder="Nome do vendedor">
+                    <button class="cv-copy-btn" type="button" title="Copiar" data-target="cv-vend-nome">
+                      <svg width="13" height="13" viewBox="0 0 20 20" fill="currentColor"><path d="M8 2a1 1 0 000 2h2a1 1 0 100-2H8z"/><path d="M3 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v6h-4.586l1.293-1.293a1 1 0 00-1.414-1.414l-3 3a1 1 0 000 1.414l3 3a1 1 0 001.414-1.414L10.414 13H15v3a2 2 0 01-2 2H5a2 2 0 01-2-2V5z"/></svg>
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <div class="cv-grid cv-grid-3">
+                <div class="cv-field-wrap">
+                  <label class="cv-label" for="cv-data-venda">Data da venda (dd/mm/aaaa) <span class="req">*</span></label>
+                  <div class="cv-copy-field">
+                    <input class="cv-input" type="text" id="cv-data-venda" placeholder="01/01/2025" maxlength="10">
+                    <button class="cv-copy-btn" type="button" title="Copiar" data-target="cv-data-venda">
+                      <svg width="13" height="13" viewBox="0 0 20 20" fill="currentColor"><path d="M8 2a1 1 0 000 2h2a1 1 0 100-2H8z"/><path d="M3 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v6h-4.586l1.293-1.293a1 1 0 00-1.414-1.414l-3 3a1 1 0 000 1.414l3 3a1 1 0 001.414-1.414L10.414 13H15v3a2 2 0 01-2 2H5a2 2 0 01-2-2V5z"/></svg>
+                    </button>
+                  </div>
+                </div>
+                <div class="cv-field-wrap">
+                  <label class="cv-label" for="cv-valor-venda">Valor da venda <span class="req">*</span></label>
+                  <div class="cv-copy-field">
+                    <input class="cv-input" type="text" id="cv-valor-venda" placeholder="10.000,00">
+                    <button class="cv-copy-btn" type="button" title="Copiar" data-target="cv-valor-venda">
+                      <svg width="13" height="13" viewBox="0 0 20 20" fill="currentColor"><path d="M8 2a1 1 0 000 2h2a1 1 0 100-2H8z"/><path d="M3 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v6h-4.586l1.293-1.293a1 1 0 00-1.414-1.414l-3 3a1 1 0 000 1.414l3 3a1 1 0 001.414-1.414L10.414 13H15v3a2 2 0 01-2 2H5a2 2 0 01-2-2V5z"/></svg>
+                    </button>
+                  </div>
+                </div>
+                <div class="cv-field-wrap">
+                  <label class="cv-label" for="cv-comp-sol">Comprador solicitante <span class="req">*</span></label>
+                  <div class="cv-copy-field">
+                    <select class="cv-input" id="cv-comp-sol">
+                      <option value="sim">Sim</option>
+                      <option value="nao">Não</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Seção 2: Comprador e Endereço -->
+          <div class="cv-section" id="cv-sec-2">
+            <div class="cv-sec-header" data-sec="2">
+              <span class="cv-sec-num">2</span>
+              <span class="cv-sec-title">Comprador e Endereço</span>
+              <button class="cv-sec-toggle" type="button" data-sec="2">−</button>
+            </div>
+            <div class="cv-sec-body" id="cv-sec-body-2">
+              <div class="cv-grid cv-grid-3">
+                <div class="cv-field-wrap">
+                  <label class="cv-label" for="cv-comp-tipo">Tipo Pessoa <span class="req">*</span></label>
+                  <div class="cv-copy-field">
+                    <select class="cv-input" id="cv-comp-tipo">
+                      <option value="fisica">Física</option>
+                      <option value="juridica">Jurídica</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="cv-field-wrap">
+                  <label class="cv-label" for="cv-comp-cpf">CPF <span class="req">*</span></label>
+                  <div class="cv-copy-field">
+                    <input class="cv-input" type="text" id="cv-comp-cpf" placeholder="000.000.000-00" maxlength="18" inputmode="numeric">
+                    <button class="cv-copy-btn" type="button" title="Copiar" data-target="cv-comp-cpf">
+                      <svg width="13" height="13" viewBox="0 0 20 20" fill="currentColor"><path d="M8 2a1 1 0 000 2h2a1 1 0 100-2H8z"/><path d="M3 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v6h-4.586l1.293-1.293a1 1 0 00-1.414-1.414l-3 3a1 1 0 000 1.414l3 3a1 1 0 001.414-1.414L10.414 13H15v3a2 2 0 01-2 2H5a2 2 0 01-2-2V5z"/></svg>
+                    </button>
+                  </div>
+                </div>
+                <div class="cv-field-wrap">
+                  <label class="cv-label" for="cv-comp-nome">Nome <span class="req">*</span></label>
+                  <div class="cv-copy-field">
+                    <input class="cv-input" type="text" id="cv-comp-nome" placeholder="Nome do comprador">
+                    <button class="cv-copy-btn" type="button" title="Copiar" data-target="cv-comp-nome">
+                      <svg width="13" height="13" viewBox="0 0 20 20" fill="currentColor"><path d="M8 2a1 1 0 000 2h2a1 1 0 100-2H8z"/><path d="M3 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v6h-4.586l1.293-1.293a1 1 0 00-1.414-1.414l-3 3a1 1 0 000 1.414l3 3a1 1 0 001.414-1.414L10.414 13H15v3a2 2 0 01-2 2H5a2 2 0 01-2-2V5z"/></svg>
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <div class="cv-grid cv-grid-2">
+                <div class="cv-field-wrap">
+                  <label class="cv-label" for="cv-cep">CEP <span class="req">*</span></label>
+                  <div class="cv-copy-field">
+                    <input class="cv-input" type="text" id="cv-cep" placeholder="01001000" maxlength="9" inputmode="numeric">
+                    <button class="cv-copy-btn" type="button" title="Copiar" data-target="cv-cep">
+                      <svg width="13" height="13" viewBox="0 0 20 20" fill="currentColor"><path d="M8 2a1 1 0 000 2h2a1 1 0 100-2H8z"/><path d="M3 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v6h-4.586l1.293-1.293a1 1 0 00-1.414-1.414l-3 3a1 1 0 000 1.414l3 3a1 1 0 001.414-1.414L10.414 13H15v3a2 2 0 01-2 2H5a2 2 0 01-2-2V5z"/></svg>
+                    </button>
+                  </div>
+                </div>
+                <div class="cv-field-wrap">
+                  <label class="cv-label" for="cv-logradouro">Logradouro</label>
+                  <div class="cv-copy-field">
+                    <input class="cv-input" type="text" id="cv-logradouro" placeholder="Rua Exemplo" readonly>
+                    <button class="cv-copy-btn" type="button" title="Copiar" data-target="cv-logradouro">
+                      <svg width="13" height="13" viewBox="0 0 20 20" fill="currentColor"><path d="M8 2a1 1 0 000 2h2a1 1 0 100-2H8z"/><path d="M3 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v6h-4.586l1.293-1.293a1 1 0 00-1.414-1.414l-3 3a1 1 0 000 1.414l3 3a1 1 0 001.414-1.414L10.414 13H15v3a2 2 0 01-2 2H5a2 2 0 01-2-2V5z"/></svg>
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <div class="cv-grid cv-grid-2">
+                <div class="cv-field-wrap">
+                  <label class="cv-label" for="cv-numero">Número <span class="req">*</span></label>
+                  <div class="cv-copy-field">
+                    <input class="cv-input" type="text" id="cv-numero" placeholder="Número">
+                    <button class="cv-copy-btn" type="button" title="Copiar" data-target="cv-numero">
+                      <svg width="13" height="13" viewBox="0 0 20 20" fill="currentColor"><path d="M8 2a1 1 0 000 2h2a1 1 0 100-2H8z"/><path d="M3 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v6h-4.586l1.293-1.293a1 1 0 00-1.414-1.414l-3 3a1 1 0 000 1.414l3 3a1 1 0 001.414-1.414L10.414 13H15v3a2 2 0 01-2 2H5a2 2 0 01-2-2V5z"/></svg>
+                    </button>
+                  </div>
+                </div>
+                <div class="cv-field-wrap">
+                  <label class="cv-label" for="cv-bairro">Bairro</label>
+                  <div class="cv-copy-field">
+                    <input class="cv-input" type="text" id="cv-bairro" placeholder="Bairro" readonly>
+                    <button class="cv-copy-btn" type="button" title="Copiar" data-target="cv-bairro">
+                      <svg width="13" height="13" viewBox="0 0 20 20" fill="currentColor"><path d="M8 2a1 1 0 000 2h2a1 1 0 100-2H8z"/><path d="M3 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v6h-4.586l1.293-1.293a1 1 0 00-1.414-1.414l-3 3a1 1 0 000 1.414l3 3a1 1 0 001.414-1.414L10.414 13H15v3a2 2 0 01-2 2H5a2 2 0 01-2-2V5z"/></svg>
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <div class="cv-grid cv-grid-2">
+                <div class="cv-field-wrap">
+                  <label class="cv-label" for="cv-complemento">Complemento</label>
+                  <div class="cv-copy-field">
+                    <input class="cv-input" type="text" id="cv-complemento" placeholder="Apto, Bloco, etc.">
+                    <button class="cv-copy-btn" type="button" title="Copiar" data-target="cv-complemento">
+                      <svg width="13" height="13" viewBox="0 0 20 20" fill="currentColor"><path d="M8 2a1 1 0 000 2h2a1 1 0 100-2H8z"/><path d="M3 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v6h-4.586l1.293-1.293a1 1 0 00-1.414-1.414l-3 3a1 1 0 000 1.414l3 3a1 1 0 001.414-1.414L10.414 13H15v3a2 2 0 01-2 2H5a2 2 0 01-2-2V5z"/></svg>
+                    </button>
+                  </div>
+                </div>
+                <div class="cv-field-wrap">
+                  <label class="cv-label" for="cv-cidade-comp">Cidade do comprador</label>
+                  <div class="cv-copy-field">
+                    <input class="cv-input" type="text" id="cv-cidade-comp" placeholder="Cidade do comprador">
+                    <button class="cv-copy-btn" type="button" title="Copiar" data-target="cv-cidade-comp">
+                      <svg width="13" height="13" viewBox="0 0 20 20" fill="currentColor"><path d="M8 2a1 1 0 000 2h2a1 1 0 100-2H8z"/><path d="M3 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v6h-4.586l1.293-1.293a1 1 0 00-1.414-1.414l-3 3a1 1 0 000 1.414l3 3a1 1 0 001.414-1.414L10.414 13H15v3a2 2 0 01-2 2H5a2 2 0 01-2-2V5z"/></svg>
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <div class="cv-grid cv-grid-2">
+                <div class="cv-field-wrap">
+                  <label class="cv-label" for="cv-cidade-auto">Cidade (automática)</label>
+                  <div class="cv-copy-field">
+                    <input class="cv-input cv-input--auto" type="text" id="cv-cidade-auto" placeholder="Cidade preenchida automaticamente pelo CEP" readonly>
+                    <button class="cv-copy-btn" type="button" title="Copiar" data-target="cv-cidade-auto">
+                      <svg width="13" height="13" viewBox="0 0 20 20" fill="currentColor"><path d="M8 2a1 1 0 000 2h2a1 1 0 100-2H8z"/><path d="M3 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v6h-4.586l1.293-1.293a1 1 0 00-1.414-1.414l-3 3a1 1 0 000 1.414l3 3a1 1 0 001.414-1.414L10.414 13H15v3a2 2 0 01-2 2H5a2 2 0 01-2-2V5z"/></svg>
+                    </button>
+                  </div>
+                </div>
+                <div class="cv-field-wrap">
+                  <label class="cv-label" for="cv-uf">UF</label>
+                  <div class="cv-copy-field">
+                    <input class="cv-input cv-input--auto" type="text" id="cv-uf" placeholder="UF" readonly maxlength="2">
+                    <button class="cv-copy-btn" type="button" title="Copiar" data-target="cv-uf">
+                      <svg width="13" height="13" viewBox="0 0 20 20" fill="currentColor"><path d="M8 2a1 1 0 000 2h2a1 1 0 100-2H8z"/><path d="M3 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v6h-4.586l1.293-1.293a1 1 0 00-1.414-1.414l-3 3a1 1 0 000 1.414l3 3a1 1 0 001.414-1.414L10.414 13H15v3a2 2 0 01-2 2H5a2 2 0 01-2-2V5z"/></svg>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Seção 3: Veículo e CRV -->
+          <div class="cv-section" id="cv-sec-3">
+            <div class="cv-sec-header" data-sec="3">
+              <span class="cv-sec-num">3</span>
+              <span class="cv-sec-title">Veículo e CRV</span>
+              <button class="cv-sec-toggle" type="button" data-sec="3">−</button>
+            </div>
+            <div class="cv-sec-body" id="cv-sec-body-3">
+              <div class="cv-grid cv-grid-3">
+                <div class="cv-field-wrap">
+                  <label class="cv-label" for="cv-placa">Placa <span class="req">*</span></label>
+                  <div class="cv-copy-field">
+                    <input class="cv-input" type="text" id="cv-placa" placeholder="ABC1234" maxlength="8" style="text-transform:uppercase">
+                    <button class="cv-copy-btn" type="button" title="Copiar" data-target="cv-placa">
+                      <svg width="13" height="13" viewBox="0 0 20 20" fill="currentColor"><path d="M8 2a1 1 0 000 2h2a1 1 0 100-2H8z"/><path d="M3 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v6h-4.586l1.293-1.293a1 1 0 00-1.414-1.414l-3 3a1 1 0 000 1.414l3 3a1 1 0 001.414-1.414L10.414 13H15v3a2 2 0 01-2 2H5a2 2 0 01-2-2V5z"/></svg>
+                    </button>
+                  </div>
+                </div>
+                <div class="cv-field-wrap">
+                  <label class="cv-label" for="cv-renavam">Renavam <span class="req">*</span></label>
+                  <div class="cv-copy-field">
+                    <input class="cv-input" type="text" id="cv-renavam" placeholder="12345678901" maxlength="11" inputmode="numeric">
+                    <button class="cv-copy-btn" type="button" title="Copiar" data-target="cv-renavam">
+                      <svg width="13" height="13" viewBox="0 0 20 20" fill="currentColor"><path d="M8 2a1 1 0 000 2h2a1 1 0 100-2H8z"/><path d="M3 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v6h-4.586l1.293-1.293a1 1 0 00-1.414-1.414l-3 3a1 1 0 000 1.414l3 3a1 1 0 001.414-1.414L10.414 13H15v3a2 2 0 01-2 2H5a2 2 0 01-2-2V5z"/></svg>
+                    </button>
+                  </div>
+                </div>
+                <div class="cv-field-wrap">
+                  <label class="cv-label" for="cv-ano-fab">Ano Fabricação <span class="req">*</span></label>
+                  <div class="cv-copy-field">
+                    <input class="cv-input" type="text" id="cv-ano-fab" placeholder="2020" maxlength="4" inputmode="numeric">
+                    <button class="cv-copy-btn" type="button" title="Copiar" data-target="cv-ano-fab">
+                      <svg width="13" height="13" viewBox="0 0 20 20" fill="currentColor"><path d="M8 2a1 1 0 000 2h2a1 1 0 100-2H8z"/><path d="M3 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v6h-4.586l1.293-1.293a1 1 0 00-1.414-1.414l-3 3a1 1 0 000 1.414l3 3a1 1 0 001.414-1.414L10.414 13H15v3a2 2 0 01-2 2H5a2 2 0 01-2-2V5z"/></svg>
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <div class="cv-grid cv-grid-3">
+                <div class="cv-field-wrap">
+                  <label class="cv-label" for="cv-ano-mod">Ano Modelo <span class="req">*</span></label>
+                  <div class="cv-copy-field">
+                    <input class="cv-input" type="text" id="cv-ano-mod" placeholder="2021" maxlength="4" inputmode="numeric">
+                    <button class="cv-copy-btn" type="button" title="Copiar" data-target="cv-ano-mod">
+                      <svg width="13" height="13" viewBox="0 0 20 20" fill="currentColor"><path d="M8 2a1 1 0 000 2h2a1 1 0 100-2H8z"/><path d="M3 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v6h-4.586l1.293-1.293a1 1 0 00-1.414-1.414l-3 3a1 1 0 000 1.414l3 3a1 1 0 001.414-1.414L10.414 13H15v3a2 2 0 01-2 2H5a2 2 0 01-2-2V5z"/></svg>
+                    </button>
+                  </div>
+                </div>
+                <div class="cv-field-wrap">
+                  <label class="cv-label" for="cv-crv-num">CRV - Número <span class="req">*</span></label>
+                  <div class="cv-copy-field">
+                    <input class="cv-input" type="text" id="cv-crv-num" placeholder="123456789012" maxlength="12" inputmode="numeric">
+                    <button class="cv-copy-btn" type="button" title="Copiar" data-target="cv-crv-num">
+                      <svg width="13" height="13" viewBox="0 0 20 20" fill="currentColor"><path d="M8 2a1 1 0 000 2h2a1 1 0 100-2H8z"/><path d="M3 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v6h-4.586l1.293-1.293a1 1 0 00-1.414-1.414l-3 3a1 1 0 000 1.414l3 3a1 1 0 001.414-1.414L10.414 13H15v3a2 2 0 01-2 2H5a2 2 0 01-2-2V5z"/></svg>
+                    </button>
+                  </div>
+                </div>
+                <div class="cv-field-wrap">
+                  <label class="cv-label" for="cv-crv-seg">CRV - Código de Segurança <span class="req">*</span></label>
+                  <div class="cv-copy-field">
+                    <input class="cv-input" type="text" id="cv-crv-seg" placeholder="12345678901" maxlength="11" inputmode="numeric">
+                    <button class="cv-copy-btn" type="button" title="Copiar" data-target="cv-crv-seg">
+                      <svg width="13" height="13" viewBox="0 0 20 20" fill="currentColor"><path d="M8 2a1 1 0 000 2h2a1 1 0 100-2H8z"/><path d="M3 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v6h-4.586l1.293-1.293a1 1 0 00-1.414-1.414l-3 3a1 1 0 000 1.414l3 3a1 1 0 001.414-1.414L10.414 13H15v3a2 2 0 01-2 2H5a2 2 0 01-2-2V5z"/></svg>
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <div class="cv-grid cv-grid-3">
+                <div class="cv-field-wrap">
+                  <label class="cv-label" for="cv-crv-via">CRV - Número via</label>
+                  <div class="cv-copy-field">
+                    <input class="cv-input" type="text" id="cv-crv-via" placeholder="1" maxlength="2" value="1" inputmode="numeric">
+                    <button class="cv-copy-btn" type="button" title="Copiar" data-target="cv-crv-via">
+                      <svg width="13" height="13" viewBox="0 0 20 20" fill="currentColor"><path d="M8 2a1 1 0 000 2h2a1 1 0 100-2H8z"/><path d="M3 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v6h-4.586l1.293-1.293a1 1 0 00-1.414-1.414l-3 3a1 1 0 000 1.414l3 3a1 1 0 001.414-1.414L10.414 13H15v3a2 2 0 01-2 2H5a2 2 0 01-2-2V5z"/></svg>
+                    </button>
+                  </div>
+                </div>
+                <div class="cv-field-wrap">
+                  <label class="cv-label" for="cv-crv-data">CRV - Data emissão (dd/mm/aaaa) <span class="req">*</span></label>
+                  <div class="cv-copy-field">
+                    <input class="cv-input" type="text" id="cv-crv-data" placeholder="01/01/2020" maxlength="10">
+                    <button class="cv-copy-btn" type="button" title="Copiar" data-target="cv-crv-data">
+                      <svg width="13" height="13" viewBox="0 0 20 20" fill="currentColor"><path d="M8 2a1 1 0 000 2h2a1 1 0 100-2H8z"/><path d="M3 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v6h-4.586l1.293-1.293a1 1 0 00-1.414-1.414l-3 3a1 1 0 000 1.414l3 3a1 1 0 001.414-1.414L10.414 13H15v3a2 2 0 01-2 2H5a2 2 0 01-2-2V5z"/></svg>
+                    </button>
+                  </div>
+                </div>
+                <div class="cv-field-wrap">
+                  <label class="cv-label" for="cv-crv-uf">CRV - UF emissão <span class="req">*</span></label>
+                  <div class="cv-copy-field">
+                    <select class="cv-input" id="cv-crv-uf">
+                      <option value="">Selecione</option>
+                      <option value="AC">AC - Acre</option>
+                      <option value="AL">AL - Alagoas</option>
+                      <option value="AM">AM - Amazonas</option>
+                      <option value="AP">AP - Amapá</option>
+                      <option value="BA">BA - Bahia</option>
+                      <option value="CE">CE - Ceará</option>
+                      <option value="DF">DF - Distrito Federal</option>
+                      <option value="ES">ES - Espírito Santo</option>
+                      <option value="GO">GO - Goiás</option>
+                      <option value="MA">MA - Maranhão</option>
+                      <option value="MG">MG - Minas Gerais</option>
+                      <option value="MS">MS - Mato Grosso do Sul</option>
+                      <option value="MT">MT - Mato Grosso</option>
+                      <option value="PA">PA - Pará</option>
+                      <option value="PB">PB - Paraíba</option>
+                      <option value="PE">PE - Pernambuco</option>
+                      <option value="PI">PI - Piauí</option>
+                      <option value="PR">PR - Paraná</option>
+                      <option value="RJ">RJ - Rio de Janeiro</option>
+                      <option value="RN">RN - Rio Grande do Norte</option>
+                      <option value="RO">RO - Rondônia</option>
+                      <option value="RR">RR - Roraima</option>
+                      <option value="RS">RS - Rio Grande do Sul</option>
+                      <option value="SC">SC - Santa Catarina</option>
+                      <option value="SE">SE - Sergipe</option>
+                      <option value="SP" selected>SP - São Paulo</option>
+                      <option value="TO">TO - Tocantins</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Erro e botões -->
+          <div class="cv-erro" id="cv-erro" style="display:none"></div>
+          <div class="cv-actions">
+            <button class="cv-btn-enviar" id="cv-btn-enviar">
+              <svg width="15" height="15" viewBox="0 0 20 20" fill="currentColor"><path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z"/></svg>
+              Enviar Comunicação (R$ 38,90)
+            </button>
+            <button class="cv-btn-limpar" id="cv-btn-limpar" type="button">Limpar</button>
+          </div>
         </div>
 
         <!-- ─── Formulário de pedido (passo inline) ─── -->
@@ -204,7 +550,7 @@
 
       <!-- ─── Histórico ─── -->
       <section class="dash-section" id="section-historico">
-        <div class="sec-header"><h2>Histórico de Pedidos</h2><p>Todos os seus pedidos e consultas realizados.</p></div>
+        <div class="sec-header"><h2>Histórico de Pedidos</h2><p>Pedidos concluídos e finalizados.</p></div>
         <div id="historico-lista"></div>
       </section>
 
@@ -219,10 +565,9 @@
           <div class="srv-tabs" id="ped-tabs">
             <button class="srv-tab active" data-pedcat="todos">Todos</button>
             <button class="srv-tab" data-pedcat="crlv">CRLV-E</button>
-            <button class="srv-tab" data-pedcat="crlv-ag">Agendados</button>
-            <button class="srv-tab" data-pedcat="atpv">ATPV-E</button>
             <button class="srv-tab" data-pedcat="codigo-seg">Cód. Segurança</button>
-            <button class="srv-tab" data-pedcat="despachante">Despachante</button>
+            <button class="srv-tab" data-pedcat="atpv">ATPV-E</button>
+            <button class="srv-tab" data-pedcat="com-venda">Comunicado de Venda</button>
           </div>
 
           <!-- Filtro de status -->
@@ -263,7 +608,7 @@
         <div class="fipe-wrap">
           <div class="fipe-toolbar">
             <div class="fipe-info">
-              <svg width="15" height="15" viewBox="0 0 20 20" fill="currentColor" style="color:#1a7fe8;flex-shrink:0"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/></svg>
+              <svg width="15" height="15" viewBox="0 0 20 20" fill="currentColor" style="color:#f97316;flex-shrink:0"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/></svg>
               <span>Consulta da Tabela FIPE — placafipe.com.br</span>
             </div>
             <a class="fipe-open-btn" href="https://placafipe.com.br/" target="_blank" rel="noopener">
@@ -301,6 +646,11 @@
         <div class="perfil-card">
           <div class="perfil-row"><span class="perfil-lbl">Nome</span><span class="perfil-val" id="perfil-nome">—</span></div>
           <div class="perfil-row"><span class="perfil-lbl">E-mail</span><span class="perfil-val" id="perfil-email">—</span></div>
+          <div class="perfil-row"><span class="perfil-lbl">CPF</span>
+            <span class="perfil-val" id="perfil-cpf-val">—</span>
+            <input class="perfil-cpf-input" type="text" id="perfil-cpf-input" placeholder="000.000.000-00" maxlength="14" inputmode="numeric" style="display:none">
+            <button class="perfil-cpf-btn" id="perfil-cpf-btn">Adicionar CPF</button>
+          </div>
           <div class="perfil-row"><span class="perfil-lbl">Telefone</span><span class="perfil-val" id="perfil-tel">—</span></div>
           <div class="perfil-row"><span class="perfil-lbl">Endereço</span><span class="perfil-val" id="perfil-end">—</span></div>
           <div class="perfil-row perfil-row--senha">
@@ -367,8 +717,133 @@
         </div>
       </section>
 
+      <!-- ─── Meu Saldo ─── -->
+      <section class="dash-section" id="section-saldo">
+        <div class="sec-header">
+          <h2>Meu Saldo</h2>
+          <p>Recarregue sua conta e pague serviços sem sair da plataforma.</p>
+        </div>
+
+        <!-- Card de saldo atual -->
+        <div class="saldo-card">
+          <div class="saldo-card-left">
+            <div class="saldo-label">Saldo disponível</div>
+            <div class="saldo-valor" id="saldo-valor-display">R$ 0,00</div>
+            <div class="saldo-hint">Use para pagar qualquer serviço da plataforma</div>
+          </div>
+          <button class="saldo-btn-recarregar" id="saldo-btn-abrir">
+            <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z" clip-rule="evenodd"/></svg>
+            Recarregar via PIX
+          </button>
+        </div>
+
+        <!-- Formulário de recarga -->
+        <div class="saldo-recarga-box" id="saldo-recarga-box" style="display:none">
+          <div class="saldo-recarga-header">
+            <svg width="18" height="18" viewBox="0 0 20 20" fill="currentColor"><path d="M4 4a2 2 0 00-2 2v1h16V6a2 2 0 00-2-2H4z"/><path fill-rule="evenodd" d="M18 9H2v5a2 2 0 002 2h12a2 2 0 002-2V9zM4 13a1 1 0 011-1h1a1 1 0 110 2H5a1 1 0 01-1-1zm5-1a1 1 0 100 2h1a1 1 0 100-2H9z" clip-rule="evenodd"/></svg>
+            Recarregar Saldo via PIX
+          </div>
+
+          <!-- Valores rápidos -->
+          <div class="saldo-valores-rapidos">
+            <button class="saldo-valor-btn" data-valor="10">R$ 10</button>
+            <button class="saldo-valor-btn" data-valor="20">R$ 20</button>
+            <button class="saldo-valor-btn" data-valor="50">R$ 50</button>
+            <button class="saldo-valor-btn" data-valor="100">R$ 100</button>
+            <button class="saldo-valor-btn" data-valor="200">R$ 200</button>
+          </div>
+
+          <div class="saldo-input-wrap">
+            <label class="saldo-input-label">Ou digite o valor:</label>
+            <div class="saldo-input-group">
+              <span class="saldo-input-prefix">R$</span>
+              <input class="saldo-input" type="number" id="saldo-valor-input" placeholder="0,00" min="1" step="0.01">
+            </div>
+          </div>
+
+          <div class="saldo-recarga-erro" id="saldo-recarga-erro" style="display:none"></div>
+
+          <button class="saldo-btn-gerar-pix" id="saldo-btn-gerar-pix">
+            <svg width="15" height="15" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clip-rule="evenodd"/></svg>
+            Gerar QR Code PIX
+          </button>
+        </div>
+
+        <!-- QR Code PIX -->
+        <div class="saldo-pix-box" id="saldo-pix-box" style="display:none">
+          <div class="saldo-pix-header">
+            <div class="saldo-pix-title">
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+              PIX gerado com sucesso!
+            </div>
+            <div class="saldo-pix-sub">Escaneie o QR Code ou copie o código abaixo. Válido por 30 minutos.</div>
+          </div>
+          <div class="saldo-pix-valor" id="saldo-pix-valor-label"></div>
+          <div class="saldo-pix-qr-wrap">
+            <img class="saldo-pix-qr" id="saldo-pix-qr" src="" alt="QR Code PIX">
+          </div>
+          <div class="saldo-pix-copia-wrap">
+            <input class="saldo-pix-copia-input" id="saldo-pix-copia" type="text" readonly>
+            <button class="saldo-pix-copia-btn" id="saldo-pix-copia-btn">Copiar</button>
+          </div>
+          <div class="saldo-pix-aviso">
+            <svg width="14" height="14" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/></svg>
+            Após o pagamento, o saldo será creditado automaticamente em até 1 minuto.
+          </div>
+          <button class="saldo-pix-nova-btn" id="saldo-pix-nova-btn">Fazer nova recarga</button>
+        </div>
+
+        <!-- Histórico de transações -->
+        <div class="saldo-historico">
+          <div class="saldo-historico-title">Histórico de transações</div>
+          <div id="saldo-historico-lista">
+            <div class="saldo-historico-vazio">Nenhuma transação ainda.</div>
+          </div>
+        </div>
+      </section>
+
     </div><!-- /dash-content -->
   </div><!-- /dash-main -->
+
+  <!-- ─── Modal de escolha de pagamento ─── -->
+  <div class="pagto-modal-overlay" id="pagto-modal-overlay" style="display:none">
+    <div class="pagto-modal">
+      <div class="pagto-modal-header">
+        <div class="pagto-modal-title">Como deseja pagar?</div>
+        <button class="pagto-modal-close" id="pagto-modal-close">✕</button>
+      </div>
+      <div class="pagto-modal-servico" id="pagto-modal-servico"></div>
+      <div class="pagto-modal-valor" id="pagto-modal-valor"></div>
+
+      <div class="pagto-opcoes">
+        <!-- Opção saldo -->
+        <button class="pagto-opcao" id="pagto-opcao-saldo">
+          <div class="pagto-opcao-icon pagto-opcao-icon--saldo">
+            <svg width="22" height="22" viewBox="0 0 20 20" fill="currentColor"><path d="M4 4a2 2 0 00-2 2v1h16V6a2 2 0 00-2-2H4z"/><path fill-rule="evenodd" d="M18 9H2v5a2 2 0 002 2h12a2 2 0 002-2V9zM4 13a1 1 0 011-1h1a1 1 0 110 2H5a1 1 0 01-1-1zm5-1a1 1 0 100 2h1a1 1 0 100-2H9z" clip-rule="evenodd"/></svg>
+          </div>
+          <div class="pagto-opcao-body">
+            <div class="pagto-opcao-title">Pagar com Saldo</div>
+            <div class="pagto-opcao-sub">Seu saldo: <strong id="pagto-saldo-disp">R$ 0,00</strong></div>
+          </div>
+          <svg class="pagto-opcao-arrow" width="16" height="16" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/></svg>
+        </button>
+
+        <!-- Opção MP -->
+        <button class="pagto-opcao" id="pagto-opcao-mp">
+          <div class="pagto-opcao-icon pagto-opcao-icon--mp">
+            <svg width="22" height="22" viewBox="0 0 20 20" fill="currentColor"><path d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z"/></svg>
+          </div>
+          <div class="pagto-opcao-body">
+            <div class="pagto-opcao-title">Pagar via Mercado Pago</div>
+            <div class="pagto-opcao-sub">Cartão, PIX ou boleto</div>
+          </div>
+          <svg class="pagto-opcao-arrow" width="16" height="16" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/></svg>
+        </button>
+      </div>
+
+      <div class="pagto-modal-erro" id="pagto-modal-erro" style="display:none"></div>
+    </div>
+  </div>
 
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>

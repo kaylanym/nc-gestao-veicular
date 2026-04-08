@@ -10,7 +10,7 @@ async function getClienteAtual() {
   var userId = sessao.data.session.user.id;
   var res = await _supabase
     .from('clientes')
-    .select('id, nome_completo, email, telefone, endereco, senha, is_admin, auth_user_id')
+    .select('id, nome_completo, email, telefone, endereco, senha, is_admin, auth_user_id, cpf, saldo')
     .eq('auth_user_id', userId)
     .single();
   if (res.error || !res.data) return null;
@@ -22,6 +22,8 @@ async function getClienteAtual() {
     endereco: res.data.endereco,
     senha: res.data.senha || '',
     isAdmin: res.data.is_admin === true,
+    cpf: res.data.cpf || '',
+    saldo: res.data.saldo || 0,
   };
 }
 
@@ -53,7 +55,8 @@ function protegerAdmin() {
 
 /* ── Salva pedido no Supabase ── */
 async function salvarPedido(pedido, clienteId) {
-  var res = await _supabase.from('pedidos').insert({
+  /* Insere e recupera o ID para vincular ao pagamento Mercado Pago */
+  var insertRes = await _supabase.from('pedidos').insert({
     cliente_id: clienteId,
     servico: pedido.servico,
     categoria: pedido.cat,
@@ -62,10 +65,13 @@ async function salvarPedido(pedido, clienteId) {
     cpf_cnpj: pedido.cpf || null,
     uf: pedido.uf || null,
     preco: pedido.preco,
-    status: 'aguardando',
-    external_reference: String(pedido.id),
-  });
-  return res;
+    status: 'aguardando_pagamento',
+  }).select('id');
+
+  if (insertRes.error) return insertRes;
+
+  var row = insertRes.data && insertRes.data[0];
+  return { data: row || null, error: row ? null : { message: 'ID do pedido não retornado.' } };
 }
 
 /* ── Busca pedidos do cliente logado ── */
