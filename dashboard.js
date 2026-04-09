@@ -2,7 +2,7 @@
    NC Gestão Veicular — Dashboard JS
    ═══════════════════════════════════════════════ */
 
-var WPP_NUMBER = '5511999999999'; // Substitua pelo número real
+var WPP_NUMBER = '5527988544683';
 
 /* URL do seu backend Node.js — altere conforme o ambiente */
 var BACKEND_URL = 'https://ncgestaoveicular.app.br';
@@ -59,34 +59,34 @@ var CRLV_ESTADOS = [
 
 /* ── Serviços ── */
 var SERVICOS = [
-  /* CRLV-E Imediato — emissão até 15 minutos */
-  { id: 'crlv-ac', cat: 'crlv', nome: 'CRLV-E Acre',         desc: 'Emissão imediata — até 15 minutos', states: 'AC', preco:  35.90, icon: '🚗', tipo: 'placa' },
-  { id: 'crlv-ap', cat: 'crlv', nome: 'CRLV-E Amapá',        desc: 'Emissão imediata — até 15 minutos', states: 'AP', preco:  14.90, icon: '🚗', tipo: 'placa' },
-  { id: 'crlv-ba', cat: 'crlv', nome: 'CRLV-E Bahia',        desc: 'Emissão imediata — até 15 minutos', states: 'BA', preco:  35.90, icon: '🚗', tipo: 'placa' },
-  { id: 'crlv-go', cat: 'crlv', nome: 'CRLV-E Goiás',        desc: 'Emissão imediata — até 15 minutos', states: 'GO', preco:  35.90, icon: '🚗', tipo: 'placa' },
-  { id: 'crlv-ma', cat: 'crlv', nome: 'CRLV-E Maranhão',     desc: 'Emissão imediata — até 15 minutos', states: 'MA', preco:  14.90, icon: '🚗', tipo: 'placa' },
-  { id: 'crlv-mg', cat: 'crlv', nome: 'CRLV-E Minas Gerais', desc: 'Emissão imediata — até 15 minutos', states: 'MG', preco:  19.90, icon: '🚗', tipo: 'placa' },
-  { id: 'crlv-pi', cat: 'crlv', nome: 'CRLV-E Piauí',        desc: 'Emissão imediata — até 15 minutos', states: 'PI', preco:  29.90, icon: '🚗', tipo: 'placa' },
-  { id: 'crlv-pr', cat: 'crlv', nome: 'CRLV-E Paraná',       desc: 'Emissão imediata — até 15 minutos', states: 'PR', preco:  25.90, icon: '🚗', tipo: 'placa' },
-  { id: 'crlv-rr', cat: 'crlv', nome: 'CRLV-E Roraima',      desc: 'Emissão imediata — até 15 minutos', states: 'RR', preco:  24.90, icon: '🚗', tipo: 'placa' },
-  { id: 'crlv-se', cat: 'crlv', nome: 'CRLV-E Sergipe',      desc: 'Emissão imediata — até 15 minutos', states: 'SE', preco:  29.90, icon: '🚗', tipo: 'placa' },
-  { id: 'crlv-sp', cat: 'crlv', nome: 'CRLV-E São Paulo',    desc: 'Emissão imediata — até 15 minutos', states: 'SP', preco:  29.90, icon: '🚗', tipo: 'placa' },
-  { id: 'crlv-to', cat: 'crlv', nome: 'CRLV-E Tocantins',    desc: 'Emissão imediata — até 15 minutos', states: 'TO', preco:  14.90, icon: '🚗', tipo: 'placa' },
+  /* CRLV-E Imediato — emissão até 10 minutos */
+  { id: 'crlv-ac', cat: 'crlv', nome: 'CRLV-E Acre',         desc: 'Emissão imediata — até 10 minutos', states: 'AC', preco:  35.90, icon: '🚗', tipo: 'placa' },
+  { id: 'crlv-ap', cat: 'crlv', nome: 'CRLV-E Amapá',        desc: 'Emissão imediata — até 10 minutos', states: 'AP', preco:  14.90, icon: '🚗', tipo: 'placa' },
+  { id: 'crlv-ba', cat: 'crlv', nome: 'CRLV-E Bahia',        desc: 'Emissão imediata — até 10 minutos', states: 'BA', preco:  35.90, icon: '🚗', tipo: 'placa' },
+  { id: 'crlv-go', cat: 'crlv', nome: 'CRLV-E Goiás',        desc: 'Emissão imediata — até 10 minutos', states: 'GO', preco:  35.90, icon: '🚗', tipo: 'placa' },
+  { id: 'crlv-ma', cat: 'crlv', nome: 'CRLV-E Maranhão',     desc: 'Emissão imediata — até 10 minutos', states: 'MA', preco:  14.90, icon: '🚗', tipo: 'placa' },
+  { id: 'crlv-mg', cat: 'crlv', nome: 'CRLV-E Minas Gerais', desc: 'Emissão imediata — até 10 minutos', states: 'MG', preco:  19.90, icon: '🚗', tipo: 'placa' },
+  { id: 'crlv-pi', cat: 'crlv', nome: 'CRLV-E Piauí',        desc: 'Emissão imediata — até 10 minutos', states: 'PI', preco:  29.90, icon: '🚗', tipo: 'placa' },
+  { id: 'crlv-pr', cat: 'crlv', nome: 'CRLV-E Paraná',       desc: 'Emissão imediata — até 10 minutos', states: 'PR', preco:  25.90, icon: '🚗', tipo: 'placa' },
+  { id: 'crlv-rr', cat: 'crlv', nome: 'CRLV-E Roraima',      desc: 'Emissão imediata — até 10 minutos', states: 'RR', preco:  24.90, icon: '🚗', tipo: 'placa' },
+  { id: 'crlv-se', cat: 'crlv', nome: 'CRLV-E Sergipe',      desc: 'Emissão imediata — até 10 minutos', states: 'SE', preco:  29.90, icon: '🚗', tipo: 'placa' },
+  { id: 'crlv-sp', cat: 'crlv', nome: 'CRLV-E São Paulo',    desc: 'Emissão imediata — até 10 minutos', states: 'SP', preco:  29.90, icon: '🚗', tipo: 'placa' },
+  { id: 'crlv-to', cat: 'crlv', nome: 'CRLV-E Tocantins',    desc: 'Emissão imediata — até 10 minutos', states: 'TO', preco:  14.90, icon: '🚗', tipo: 'placa' },
 
-  /* CRLV-E Agendado — entrega em até 72h úteis via WhatsApp */
-  { id: 'crlv-ag-rj1', cat: 'crlv-ag', nome: 'CRLV-E Rio de Janeiro — 1ª Via',       desc: 'Agendado — entrega em até 72h úteis via WhatsApp', states: 'RJ', preco:  29.90, icon: '📅', tipo: 'placa', wpp: true, badge: 'ag' },
-  { id: 'crlv-ag-rj2', cat: 'crlv-ag', nome: 'CRLV-E Rio de Janeiro — 2ª Via',       desc: 'Reemissão agendada — entrega em até 72h úteis via WhatsApp', states: 'RJ', preco: 129.90, icon: '📅', tipo: 'placa', wpp: true, badge: 'ag' },
-  { id: 'crlv-ag-al',  cat: 'crlv-ag', nome: 'CRLV-E Alagoas',                        desc: 'Agendado — entrega em até 72h úteis via WhatsApp', states: 'AL', preco:  34.90, icon: '📅', tipo: 'placa', wpp: true, badge: 'ag' },
-  { id: 'crlv-ag-am',  cat: 'crlv-ag', nome: 'CRLV-E Amazonas',                       desc: 'Agendado — entrega em até 72h úteis via WhatsApp', states: 'AM', preco:  79.90, icon: '📅', tipo: 'placa', wpp: true, badge: 'ag' },
-  { id: 'crlv-ag-ce',  cat: 'crlv-ag', nome: 'CRLV-E Ceará',                          desc: 'Agendado — entrega em até 72h úteis via WhatsApp', states: 'CE', preco:  69.90, icon: '📅', tipo: 'placa', wpp: true, badge: 'ag' },
-  { id: 'crlv-ag-df',  cat: 'crlv-ag', nome: 'CRLV-E Distrito Federal',               desc: 'Agendado — entrega em até 72h úteis via WhatsApp', states: 'DF', preco:  69.90, icon: '📅', tipo: 'placa', wpp: true, badge: 'ag' },
-  { id: 'crlv-ag-es',  cat: 'crlv-ag', nome: 'CRLV-E Espírito Santo',                 desc: 'Agendado — entrega em até 72h úteis via WhatsApp', states: 'ES', preco:  29.90, icon: '📅', tipo: 'placa', wpp: true, badge: 'ag' },
-  { id: 'crlv-ag-mt',  cat: 'crlv-ag', nome: 'CRLV-E Mato Grosso',                    desc: 'Agendado — entrega em até 72h úteis via WhatsApp', states: 'MT', preco:  34.90, icon: '📅', tipo: 'placa', wpp: true, badge: 'ag' },
-  { id: 'crlv-ag-pb',  cat: 'crlv-ag', nome: 'CRLV-E Paraíba',                        desc: 'Agendado — entrega em até 72h úteis via WhatsApp', states: 'PB', preco:  59.90, icon: '📅', tipo: 'placa', wpp: true, badge: 'ag' },
-  { id: 'crlv-ag-rn',  cat: 'crlv-ag', nome: 'CRLV-E Rio Grande do Norte',            desc: 'Agendado — entrega em até 72h úteis via WhatsApp', states: 'RN', preco:  69.90, icon: '📅', tipo: 'placa', wpp: true, badge: 'ag' },
-  { id: 'crlv-ag-rs',  cat: 'crlv-ag', nome: 'CRLV-E Rio Grande do Sul',              desc: 'Agendado — entrega em até 72h úteis via WhatsApp', states: 'RS', preco: 129.90, icon: '📅', tipo: 'placa', wpp: true, badge: 'ag' },
-  { id: 'crlv-ag-ro',  cat: 'crlv-ag', nome: 'CRLV-E Rondônia',                       desc: 'Agendado — entrega em até 72h úteis via WhatsApp', states: 'RO', preco:  39.90, icon: '📅', tipo: 'placa', wpp: true, badge: 'ag' },
-  { id: 'crlv-ag-sc',  cat: 'crlv-ag', nome: 'CRLV-E Santa Catarina',                 desc: 'Agendado — entrega em até 72h úteis via WhatsApp', states: 'SC', preco:  79.90, icon: '📅', tipo: 'placa', wpp: true, badge: 'ag' },
+  /* CRLV-E Agendado — entrega em até 2h */
+  { id: 'crlv-ag-rj1', cat: 'crlv-ag', nome: 'CRLV-E Rio de Janeiro — 1ª Via',       desc: 'Agendado — entrega em até 2h', states: 'RJ', preco:  29.90, icon: '📅', tipo: 'placa', wpp: true, badge: 'ag' },
+  { id: 'crlv-ag-rj2', cat: 'crlv-ag', nome: 'CRLV-E Rio de Janeiro — 2ª Via',       desc: 'Reemissão — entrega em até 2h', states: 'RJ', preco: 129.90, icon: '📅', tipo: 'placa', wpp: true, badge: 'ag' },
+  { id: 'crlv-ag-al',  cat: 'crlv-ag', nome: 'CRLV-E Alagoas',                        desc: 'Agendado — entrega em até 2h', states: 'AL', preco:  34.90, icon: '📅', tipo: 'placa', wpp: true, badge: 'ag' },
+  { id: 'crlv-ag-am',  cat: 'crlv-ag', nome: 'CRLV-E Amazonas',                       desc: 'Agendado — entrega em até 2h', states: 'AM', preco:  79.90, icon: '📅', tipo: 'placa', wpp: true, badge: 'ag' },
+  { id: 'crlv-ag-ce',  cat: 'crlv-ag', nome: 'CRLV-E Ceará',                          desc: 'Agendado — entrega em até 2h', states: 'CE', preco:  69.90, icon: '📅', tipo: 'placa', wpp: true, badge: 'ag' },
+  { id: 'crlv-ag-df',  cat: 'crlv-ag', nome: 'CRLV-E Distrito Federal',               desc: 'Agendado — entrega em até 2h', states: 'DF', preco:  69.90, icon: '📅', tipo: 'placa', wpp: true, badge: 'ag' },
+  { id: 'crlv-ag-es',  cat: 'crlv-ag', nome: 'CRLV-E Espírito Santo',                 desc: 'Agendado — entrega em até 2h', states: 'ES', preco:  29.90, icon: '📅', tipo: 'placa', wpp: true, badge: 'ag' },
+  { id: 'crlv-ag-mt',  cat: 'crlv-ag', nome: 'CRLV-E Mato Grosso',                    desc: 'Agendado — entrega em até 2h', states: 'MT', preco:  34.90, icon: '📅', tipo: 'placa', wpp: true, badge: 'ag' },
+  { id: 'crlv-ag-pb',  cat: 'crlv-ag', nome: 'CRLV-E Paraíba',                        desc: 'Agendado — entrega em até 2h', states: 'PB', preco:  59.90, icon: '📅', tipo: 'placa', wpp: true, badge: 'ag' },
+  { id: 'crlv-ag-rn',  cat: 'crlv-ag', nome: 'CRLV-E Rio Grande do Norte',            desc: 'Agendado — entrega em até 2h', states: 'RN', preco:  69.90, icon: '📅', tipo: 'placa', wpp: true, badge: 'ag' },
+  { id: 'crlv-ag-rs',  cat: 'crlv-ag', nome: 'CRLV-E Rio Grande do Sul',              desc: 'Agendado — entrega em até 2h', states: 'RS', preco: 129.90, icon: '📅', tipo: 'placa', wpp: true, badge: 'ag' },
+  { id: 'crlv-ag-ro',  cat: 'crlv-ag', nome: 'CRLV-E Rondônia',                       desc: 'Agendado — entrega em até 2h', states: 'RO', preco:  39.90, icon: '📅', tipo: 'placa', wpp: true, badge: 'ag' },
+  { id: 'crlv-ag-sc',  cat: 'crlv-ag', nome: 'CRLV-E Santa Catarina',                 desc: 'Agendado — entrega em até 2h', states: 'SC', preco:  79.90, icon: '📅', tipo: 'placa', wpp: true, badge: 'ag' },
 
   /* ATPV-E — emissão em até 2 horas */
   { id: 'atpv-es', cat: 'atpv', nome: 'ATPV-E Espírito Santo',      desc: 'Emissão em até 2 horas', states: 'ES', preco:  80.00, icon: '📄', tipo: 'placa' },
@@ -119,9 +119,6 @@ var SERVICOS = [
   { id: 'codigo-seg-crlv', cat: 'codigo-seg', nome: 'Código de Segurança CRLV-E',
     desc: 'Geração e validação do código de segurança para documentos CRLV-E.',
     states: 'Todo o Brasil', preco: 19.90, icon: '🔐', tipo: 'placa' },
-  { id: 'codigo-seg-atpv', cat: 'codigo-seg', nome: 'Código de Segurança ATPV-E',
-    desc: 'Geração e validação do código de segurança para documentos ATPV-E.',
-    states: 'Todo o Brasil', preco: 19.90, icon: '🔐', tipo: 'placa' },
 
   /* Comunicado de Venda */
   { id: 'com-venda', cat: 'com-venda', nome: 'Comunicado de Venda',
@@ -136,7 +133,7 @@ var TABELA_GRUPOS = [
   { label: 'ATPV-E',           ids: ['atpv-es','atpv-mg','atpv-ba','atpv-sc','atpv-al','atpv-rj','atpv-rs','atpv-pr','atpv-ce'] },
   { label: 'Débitos',          ids: ['painel-debitos-consulta','painel-debitos-pagamento'] },
   { label: 'Boletos',          ids: ['boleto-multa','boleto-ipva','boleto-licenciamento'] },
-  { label: 'Código de Segurança', ids: ['codigo-seg-crlv','codigo-seg-atpv'] },
+  { label: 'Código de Segurança', ids: ['codigo-seg-crlv'] },
 ];
 
 /* ── Estado atual ── */
@@ -1512,10 +1509,41 @@ function fecharModalPagamento(escolha) {
    ═══════════════════════════════════════════════ */
 
 function abrirComunicadoVenda() {
-  document.querySelector('.servicos-section').style.display = 'none';
-  var wrap = document.getElementById('cv-form-wrap');
-  wrap.style.display = 'flex';
-  wrap.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  var overlay = document.createElement('div');
+  overlay.id = 'cv-aviso-overlay';
+  overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px;';
+
+  overlay.innerHTML =
+    '<div style="background:#fff;border-radius:16px;max-width:460px;width:100%;padding:32px 28px;box-shadow:0 8px 32px rgba(0,0,0,.2);text-align:center;">' +
+      '<div style="width:48px;height:48px;border-radius:50%;background:#f97316;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;">' +
+        '<span style="color:#fff;font-size:24px;font-weight:700;">!</span>' +
+      '</div>' +
+      '<h3 style="margin:0 0 12px;font-size:18px;font-weight:700;color:#111;">Importante antes de enviar o Comunicado de Venda</h3>' +
+      '<p style="margin:0 0 24px;font-size:14px;color:#555;line-height:1.6;">' +
+        'Para mandar o comunicado de venda, tenha sempre em mãos o <strong style="color:#f97316;">recibo antigo</strong> ou a <strong style="color:#f97316;">ATPV-e digital</strong>. Se não possuir nenhum dos dois, solicite primeiro a emissão do documento antes de prosseguir.' +
+      '</p>' +
+      '<div style="display:flex;gap:12px;justify-content:center;">' +
+        '<button id="cv-aviso-cancelar" style="padding:10px 24px;border-radius:10px;border:1.5px solid #ddd;background:#f5f5f5;color:#555;font-weight:600;font-size:14px;cursor:pointer;">Cancelar</button>' +
+        '<button id="cv-aviso-continuar" style="padding:10px 24px;border-radius:10px;border:none;background:#f97316;color:#fff;font-weight:700;font-size:14px;cursor:pointer;">Entendi, prosseguir</button>' +
+      '</div>' +
+    '</div>';
+
+  document.body.appendChild(overlay);
+
+  document.getElementById('cv-aviso-cancelar').addEventListener('click', function() {
+    overlay.remove();
+  });
+  overlay.addEventListener('click', function(e) {
+    if (e.target === overlay) overlay.remove();
+  });
+
+  document.getElementById('cv-aviso-continuar').addEventListener('click', function() {
+    overlay.remove();
+    document.querySelector('.servicos-section').style.display = 'none';
+    var wrap = document.getElementById('cv-form-wrap');
+    wrap.style.display = 'flex';
+    wrap.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
 }
 
 function fecharComunicadoVenda() {
