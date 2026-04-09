@@ -123,7 +123,7 @@ var SERVICOS = [
   /* Comunicado de Venda */
   { id: 'com-venda', cat: 'com-venda', nome: 'Comunicado de Venda',
     desc: 'Registre a transferência de propriedade do veículo junto ao DETRAN.',
-    states: 'Todo o Brasil', preco: 80.00, icon: '📝', tipo: 'com-venda' },
+    states: 'Todo o Brasil', preco: 58.90, icon: '📝', tipo: 'com-venda' },
 ];
 
 /* ── Tabela de valores agrupada ── */
@@ -1745,7 +1745,7 @@ async function enviarComunicado() {
       renavam: cvVal('cv-renavam'),
       cpf_cnpj: cvVal('cv-vend-cpf'),
       uf: cvVal('cv-crv-uf'),
-      preco: 80.00,
+      preco: 58.90,
       status: 'aguardando_pagamento',
       criado_em: new Date().toISOString(),
     };
@@ -1795,7 +1795,7 @@ async function enviarComunicado() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         servico: 'Comunicado de Venda',
-        preco: 80.00,
+        preco: 58.90,
         placa: cvVal('cv-placa').toUpperCase(),
         clienteId: cliente.id,
         clienteEmail: cliente.email || '',
